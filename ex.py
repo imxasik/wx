@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import os  # Import the os module
+import os
 
 # Get the directory where the script is located
 script_directory = os.path.dirname(os.path.abspath(__file__))
