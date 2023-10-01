@@ -28,6 +28,6 @@ jobs:
         git config --global user.name "imxasik"
         git add test.png
         git commit -m "Matplotlib plot"
-        git push https://$GH_PAT@github.com/username/repository.git HEAD:branch-name
+        git push https://$GH_PAT@github.com/imxasik/wx.git HEAD:main
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
