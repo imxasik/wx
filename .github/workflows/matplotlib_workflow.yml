@@ -13,14 +13,20 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8 # Choose the Python version you want to use (e.g., 3.8, 3.9, etc.)
+        python-version: 3.8
 
     - name: Install dependencies
       run: pip install numpy matplotlib
 
     - name: Run Matplotlib Code
       run: |
-        python ex.py # Replace with the name of your Python script that contains the Matplotlib code
+        python ex.py
+
+    - name: List Artifacts
+      run: |
+        echo "List of artifacts:"
+        ls -la $GITHUB_WORKSPACE/.github/artifacts/
+
     - name: Upload Plot as Artifact
       uses: actions/upload-artifact@v2
       with:
