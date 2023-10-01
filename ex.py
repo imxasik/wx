@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import os
 
 fig, ax = plt.subplots()
 
@@ -13,6 +14,7 @@ ax.set_ylabel('fruit supply')
 ax.set_title('Fruit supply by kind and color')
 ax.legend(title='Fruit color')
 
-# Specify a different directory to save the output.png file
-plt.savefig('/github/workspace/output.png')
+# Use a relative path to save the output.png file in the same directory as the script
+output_path = os.path.join(os.path.dirname(__file__), 'output.png')
+plt.savefig(output_path)
 
