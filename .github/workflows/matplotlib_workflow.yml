@@ -1,0 +1,23 @@
+name: Matplotlib Workflow
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.12 # Choose the Python version you want to use (e.g., 3.8, 3.9, etc.)
+
+    - name: Install dependencies
+      run: pip install numpy matplotlib
+
+    - name: Run Matplotlib Code
+      run: |
+        python ex.py # Replace with the name of your Python script that contains the Matplotlib code
