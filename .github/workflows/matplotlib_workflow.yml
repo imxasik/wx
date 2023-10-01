@@ -21,3 +21,8 @@ jobs:
     - name: Run Matplotlib Code
       run: |
         python ex.py # Replace with the name of your Python script that contains the Matplotlib code
+    - name: Upload Plot as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: my_plot
+        path: test.png
