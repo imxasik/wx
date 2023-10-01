@@ -12,5 +12,8 @@ ax.set(xlabel='time (s)', ylabel='voltage (mV)',
        title='About as simple as it gets, folks')
 ax.grid()
 
+# Save the plot as "test.png" in the current working directory
 fig.savefig("test.png")
+
+# Show the plot (optional, for local testing)
 plt.show()
