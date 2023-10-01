@@ -22,3 +22,29 @@ jobs:
     - name: Run Matplotlib Code
       run: |
         python ex.py # Replace with the name of your Python script that contains the Matplotlib code
+
+    - name: Save Matplotlib Plot
+      run: |
+        mv output.png $GITHUB_WORKSPACE/output.png
+
+    - name: Commit and Push Changes
+      uses: actions/github-script@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+
+          const filePath = path.join(__dirname, '..', 'output.png');
+          const fileData = fs.readFileSync(filePath);
+
+          const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
+
+          octokit.repos.createOrUpdateFile({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            path: 'output.png',
+            message: 'Add Matplotlib plot',
+            content: fileData.toString('base64'),
+            branch: context.ref.replace('refs/heads/', ''),
+          });
