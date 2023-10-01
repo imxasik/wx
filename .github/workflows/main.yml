@@ -23,10 +23,6 @@ jobs:
       run: |
         python ex.py # Replace with the name of your Python script that contains the Matplotlib code
 
-    - name: Copy Matplotlib Plot
-      run: |
-        cp output.png $GITHUB_WORKSPACE/output.png
-
     - name: Commit and Push Changes
       uses: actions/github-script@v4
       with:
