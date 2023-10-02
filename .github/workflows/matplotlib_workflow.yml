@@ -1,33 +1,25 @@
-name: Matplotlib Workflow
+name: Generate and Upload Matplotlib Plot
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  generate-plot:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
 
-    - name: Install dependencies
-      run: pip install numpy matplotlib
+      - name: Install Dependencies
+        run: pip install matplotlib numpy pandas ftputil
 
-    - name: Run Matplotlib Code
-      run: |
-        python ex.py
-
-    - name: Commit and Push Changes
-      run: |
-        git config --global user.email "imxasik@gmail.com"
-        git config --global user.name "imxasik"
-        git add test.png
-        git commit -m "Matplotlib plot"
-        git push https://$GH_PAT@github.com/imxasik/wx.git HEAD:main
-      env:
-        GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Run Python Script
+        run: python ex.py
