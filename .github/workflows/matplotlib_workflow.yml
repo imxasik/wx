@@ -2,7 +2,7 @@ name: Generate and Upload Matplotlib Plot
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Schedule to run every 2 minutes
+    - cron: '0 6 * * *'  # Schedule to run at 06:00 UTC every day
 
 jobs:
   generate-plot:
@@ -22,4 +22,3 @@ jobs:
 
       - name: Run Python Script
         run: python ex.py
-        
