@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta
 import ftputil
+import io
 
 today = datetime.today()
 up = today.strftime("%d %b %Y")
