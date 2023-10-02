@@ -19,7 +19,7 @@ jobs:
           python-version: 3.9
 
       - name: Install Dependencies
-        run: pip install matplotlib numpy pandas ftputil
+        run: pip install matplotlib numpy pandas ftputil requests argparse
 
       - name: Run Python Script
         run: python ex.py
