@@ -45,6 +45,6 @@ ftp_password = "Im80K123"
 with ftplib.FTP(ftp_host) as ftp:
     ftp.login(ftp_username, ftp_password)
     ftp.cwd('htdocs/wx')  # Change directory to your desired location on the FTP server
-    ftp.storbinary('STOR soi7maa.jpg', plot_buffer)
+    ftp.storbinary('STOR soi7ma.jpg', plot_buffer)
 
 plt.show()
