@@ -1,9 +1,8 @@
 name: Generate and Upload Matplotlib Plot
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '*/2 * * * *'  # Schedule to run every 2 minutes
 
 jobs:
   generate-plot:
@@ -23,3 +22,4 @@ jobs:
 
       - name: Run Python Script
         run: python ex.py
+        
