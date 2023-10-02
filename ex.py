@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import ftplib
+import io
 
 # Read data from the provided URL
 df = pd.read_csv("https://data.longpaddock.qld.gov.au/SeasonalClimateOutlook/SouthernOscillationIndex/SOIDataFiles/DailySOI1933-1992Base.txt", sep='\s+')
