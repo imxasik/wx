@@ -19,7 +19,7 @@ jobs:
           python-version: 3.9
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil io
+        run: pip install matplotlib pandas ftputil
 
       - name: Run Python Script
         run: python ex.py
