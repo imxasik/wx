@@ -15,14 +15,6 @@ dt = df.head(5)
 x = dl.iloc[::-1, 0]
 y = dl.iloc[::-1, 3].str.rstrip(' °C').astype(float)
 
-yya = dl.iloc[:, 3].min().rstrip(' °C')
-xxa = dl[dl.iloc[:, 3] == yya]
-xxxa = xxa.iloc[-1:, 0]
-
-yyb = dl.iloc[:, 3].max().rstrip(' °C')
-xxb = dl[dl.iloc[:, 3] == yyb]
-xxxb = xxb.iloc[-1:, 0]
-
 dd = dt.iloc[0, 3]
 
 fig = plt.figure(figsize=(15, 12), dpi=300)
@@ -32,8 +24,6 @@ font1 = {'family': 'serif', 'color': 'purple', 'size': 15, 'weight': 'bold'}
 font2 = {'family': 'serif', 'color': 'blue', 'size': 15}
 
 ax.plot(x, y, '-o', label=str(un) + ' Temp', color='blue', lw='0.8')
-ax.plot(xxxa, yya, '-o', label='Min Temp', color='green')
-ax.plot(xxxb, yyb, '-o', label='Max Temp', color='red')
 
 ax.grid(True)
 
