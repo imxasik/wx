@@ -2,7 +2,7 @@ name: Run 6 Hours
 
 on:
   schedule:
-    - cron: '30 */6 * * *'  # Schedule to run every 6 hours starting from 0:30 UTC
+    - cron: '15 */6 * * *'  # Schedule to run every 6 hours starting from 0:30 UTC
 
 jobs:
   generate-plot:
@@ -21,13 +21,13 @@ jobs:
         run: pip install matplotlib pandas ftputil
 
       - name: Run Python Script
-        run: python Dhaka temp.py
+        run: python Dhaka_temp.py
 
       - name: Run Wind Python Script
-        run: python Dhaka wind.py
+        run: python Dhaka_wind.py
 
       - name: Run Wind Python Script
-        run: python Jashore temp.py
+        run: python Jashore_temp.py
 
       - name: Run Wind Python Script
-        run: python Jashore wind.py
+        run: python Jashore_wind.py
