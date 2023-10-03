@@ -2,7 +2,7 @@ name: Run 6 Hours
 
 on:
   schedule:
-    - cron: '30 */6 * * *'  # Schedule to run every 6 hours starting from 0:30 UTC
+    - cron: '35 */6 * * *'  # Schedule to run every 6 hours starting from 0:30 UTC
 
 jobs:
   generate-plot:
