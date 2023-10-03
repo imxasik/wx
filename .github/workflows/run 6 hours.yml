@@ -25,3 +25,9 @@ jobs:
 
       - name: Run Wind Python Script
         run: python Dhaka wind.py
+
+      - name: Run Wind Python Script
+        run: python Jashore temp.py
+
+      - name: Run Wind Python Script
+        run: python Jashore wind.py
