@@ -1,4 +1,3 @@
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import ftplib
@@ -14,13 +13,13 @@ dl = df.iloc[2:21]
 dt = df.head(5)
 
 x = dl.iloc[::-1, 0]
-y = dl.iloc[::-1, 3]
+y = dl.iloc[::-1, 3].str.rstrip(' °C').astype(float)
 
-yya = dl.iloc[:, 3].min()
+yya = dl.iloc[:, 3].min()..str.rstrip(' °C').astype(float)
 xxa = dl[dl.iloc[:, 3] == yya]
 xxxa = xxa.iloc[-1:, 0]
 
-yyb = dl.iloc[:, 3].max()
+yyb = dl.iloc[:, 3].max()..str.rstrip(' °C').astype(float)
 xxb = dl[dl.iloc[:, 3] == yyb]
 xxxb = xxb.iloc[-1:, 0]
 
