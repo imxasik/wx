@@ -1,4 +1,4 @@
-name: SOI 7MA Plot
+name: Run 6 Hours
 
 on:
   schedule:
@@ -22,3 +22,6 @@ jobs:
 
       - name: Run Python Script
         run: python Dhaka temp.py
+
+      - name: Run Wind Python Script
+        run: python Dhaka wind.py
