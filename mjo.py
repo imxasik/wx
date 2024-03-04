@@ -4,7 +4,7 @@ import requests
 import pandas as pd
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta
-import ftplib
+import io
 
 today = datetime.today()
 up = today.strftime("%d %b %Y")
