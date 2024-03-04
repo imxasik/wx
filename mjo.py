@@ -84,16 +84,20 @@ for a, b in zip(a, b):
                  
 
 
-plt.savefig("../MJO Index.jpg", transparent = True)
+# Save the plot to a BytesIO buffer
+plot_buffer = io.BytesIO()
+plt.savefig(plot_buffer, format="jpg", transparent=True)
+plot_buffer.seek(0)
 
-ftp = ftplib.FTP('ftpupload.net')
-ftp.login('epiz_32144154', 'Im80K123')
-ftp.cwd('htdocs/wx')
+# FTP Server Details
+ftp_host = "ftpupload.net"
+ftp_username = "epiz_32144154"
+ftp_password = "Im80K123"
 
-# Upload the plot to the server
-with open('../MJO Index.jpg', 'rb') as f:
-    ftp.storbinary('STOR mjo.jpg', f)
+# Connect to the FTP server and upload the plot directly
+with ftplib.FTP(ftp_host) as ftp:
+    ftp.login(ftp_username, ftp_password)
+    ftp.cwd('htdocs/wx')  # Change directory to your desired location on the FTP server
+    ftp.storbinary('STOR soi7ma.jpg', plot_buffer)
 
-# Close the connection to the server
-ftp.quit() 
 plt.show()
