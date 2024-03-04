@@ -1,4 +1,4 @@
-name: Instant Runs
+name: Manual Runs
 
 on:
   workflow_dispatch:  # This allows running the workflow manually from GitHub
@@ -20,4 +20,4 @@ jobs:
         run: pip install matplotlib pandas ftputil lxml
 
       - name: Run Dhaka Wind Python Script
-        run: python Dhaka_wind.py
+        run: python soi7ma.py
