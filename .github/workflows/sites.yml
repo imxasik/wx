@@ -9,4 +9,4 @@ jobs:
 
     steps:
       - name: Visit Website
-        run: curl -k -I https://xpwx.rf.gd/radar/auto.php
+        run: curl -k -I https://xpwx.rf.gd/radar/com.php
