@@ -1,0 +1,24 @@
+name: Run 6 Hours
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # Schedule to run every 10 minutes
+
+jobs:
+  generate-plot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Dependencies
+        run: pip install matplotlib ftputil import requests re
+
+      - name: Run Python Script
+        run: python radar.py
