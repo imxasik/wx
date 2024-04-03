@@ -9,4 +9,4 @@ jobs:
 
     steps:
       - name: Visit Website
-        run: curl -I https://xpwx.rf.gd/radar/auto.php  # Replace with the desired website URL
+        run: curl -k -I https://xpwx.rf.gd/radar/auto.php
