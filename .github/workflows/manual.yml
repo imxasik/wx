@@ -16,6 +16,9 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Upgrade Pip
+        run: pip install --upgrade pip
+
       - name: Install Dependencies
         run: pip install matplotlib pandas ftputil lxml requests re
 
