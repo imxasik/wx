@@ -1,8 +1,8 @@
 import requests
-import re
 import io
 import matplotlib.pyplot as plt
 import ftplib
+from bs4 import BeautifulSoup
 
 # URL of the website
 url = "https://data.rainviewer.com/images/BDCOMP/"
@@ -10,11 +10,14 @@ url = "https://data.rainviewer.com/images/BDCOMP/"
 # Send an HTTP GET request to the URL
 response = requests.get(url)
 
-# Use regular expressions to find the links that end with "source.jpeg"
-pattern = r'<a\s+href="([^"]*source\.jpeg)"[^>]*>'
-matches = re.findall(pattern, response.text)
-if matches:
-    latest_source_link = matches[-1]
+# Parse the HTML content using BeautifulSoup
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Find all anchor tags with href attribute ending with "source.jpeg"
+anchor_tags = soup.find_all('a', href=lambda href: href and href.endswith("source.jpeg"))
+
+if anchor_tags:
+    latest_source_link = anchor_tags[-1]['href']
     latest_source_url = url + latest_source_link
 
     # Download the latest source.jpeg
