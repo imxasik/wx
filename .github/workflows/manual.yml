@@ -20,7 +20,7 @@ jobs:
         run: pip install --upgrade pip
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil lxml requests
+        run: pip install matplotlib pandas ftputil lxml
 
       - name: Run Manual Python Script
         run: python radar.py
