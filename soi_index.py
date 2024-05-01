@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import requests
 import io
+import ftplib
 
 # Define URL and custom headers
 url = 'https://data.longpaddock.qld.gov.au/SeasonalClimateOutlook/SouthernOscillationIndex/SOIDataFiles/DailySOI1933-1992Base.txt'
@@ -82,7 +83,7 @@ if response.status_code == 200:
     with ftplib.FTP(ftp_host) as ftp:
         ftp.login(ftp_username, ftp_password)
         ftp.cwd('htdocs/wx')  # Change directory to your desired location on the FTP server
-        ftp.storbinary('STOR dt.jpg', plot_buffer)
+        ftp.storbinary('STOR soi.jpg', plot_buffer)
 
     plt.show()
 else:
