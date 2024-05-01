@@ -68,9 +68,22 @@ if response.status_code == 200:
     # Improve spacing
     plt.tight_layout()
 
-    # Save and show plot
-    plt.savefig("../Plot Files/Daily SOI.jpg", transparent=True)
-    plt.show()
+    # Save the plot to a BytesIO buffer
+    plot_buffer = io.BytesIO()
+    plt.savefig(plot_buffer, format="jpg", transparent=True)
+    plot_buffer.seek(0)
 
+    # FTP Server Details
+    ftp_host = "ftpupload.net"
+    ftp_username = "epiz_32144154"
+    ftp_password = "Im80K123"
+
+    # Connect to the FTP server and upload the plot directly
+    with ftplib.FTP(ftp_host) as ftp:
+        ftp.login(ftp_username, ftp_password)
+        ftp.cwd('htdocs/wx')  # Change directory to your desired location on the FTP server
+        ftp.storbinary('STOR dt.jpg', plot_buffer)
+
+    plt.show()
 else:
     print("Failed to fetch data from the website. Status code:", response.status_code)
