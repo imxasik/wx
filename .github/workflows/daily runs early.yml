@@ -18,8 +18,11 @@ jobs:
           python-version: 3.9
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil
+        run: pip install matplotlib pandas ftputil scipy requests
 
       - name: Run Python Script
         run: python soi7ma.py
+
+      - name: Run Daily Temp Script
+        run: python daily_temp.py
         
