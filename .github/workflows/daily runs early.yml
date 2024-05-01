@@ -25,4 +25,7 @@ jobs:
 
       - name: Run Daily Temp Script
         run: python daily_temp.py
+
+      - name: Run SOI Script
+        run: python soi_index.py
         
