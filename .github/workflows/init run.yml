@@ -20,13 +20,4 @@ jobs:
         run: pip install matplotlib pandas ftputil lxml
 
       - name: Run Dhaka Temp Python Script
-        run: python Dhaka_temp.py
-
-      - name: Run Dhaka Wind Python Script
-        run: python Dhaka_wind.py
-
-      - name: Run Jashore Temp Python Script
-        run: python Jashore_temp.py
-
-      - name: Run Jashore Wind Python Script
-        run: python Jashore_wind.py
+        run: python daily_temp.py
