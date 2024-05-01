@@ -21,4 +21,4 @@ jobs:
 
 
       - name: Run Dhaka Temp Python Script
-        run: python daily_temp.py
+        run: python soi_index.py
