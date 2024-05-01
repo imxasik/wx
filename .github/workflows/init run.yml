@@ -17,7 +17,8 @@ jobs:
           python-version: 3.9
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil lxml
+        run: pip install matplotlib pandas ftputil scipy
+
 
       - name: Run Dhaka Temp Python Script
         run: python daily_temp.py
