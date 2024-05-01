@@ -32,7 +32,7 @@ if response.status_code == 200:
     data_dt = detrend(data.values)
     
     # Design Part start from here
-    fig = plt.figure(figsize=(11, 😎, dpi=300)
+    fig = plt.figure(figsize=(11, 8), dpi=300)
     ax = fig.add_subplot()
 
     font1 = {'family':'serif','color':'purple','size':15, 'weight':'bold'}
