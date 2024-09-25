@@ -196,11 +196,11 @@ if response.status_code == 200:
         title_text = f'{storm_type} "{cyclone_name.upper()}" Track'
 
     # Adjust space between suptitle and title
-    plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.940)
+    plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.935)
 
      # Texts
     ax.text(1.00, 1.01, "PEAK TIME\n 12Z 25-Sep-2024", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
-    ax.text(0.00, 1.01, "MAX WIND: 35KT\nMIN MSLP: 990MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
+    ax.text(0.00, 1.01, f"MAX WIND: {max_wind}KT\nMIN MSLP: 990MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
 
     # Set xlabel with correct indentation
     ax.set_xlabel(f"(1-MINUTE SUSTAINED WIND SCALE)")
