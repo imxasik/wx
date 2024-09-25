@@ -5,115 +5,6 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
 from PIL import Image
-import ftplib
-
-Image.MAX_IMAGE_PIXELS = 300000000
-
-# Step 1: Fetch and Process Cyclone Data (Without saving to a CSV file)
-
-# URL of the data
-url = "https://www.nrlmry.navy.mil/tcdat/tc2024/AL/AL092024/txt/trackfile.txt"
-
-# Disable SSL certificate verification and fetch the data
-response = requests.get(url, verify=False)
-
-# Define the column names
-columns = ["Id", "Name", "Date", "Time", "Latitude", "Longitude", "Basin", "Intensity", "Pressure"]
-
-# Load the text data into a pandas dataframe
-if response.status_code == 200:
-    data = StringIO(response.text)
-    df = pd.read_csv(data, delim_whitespace=True, header=None, names=columns)
-
-    # Ensure Time column is in the format 'HH:MM'
-    df['Time'] = df['Time'].astype(int).apply(lambda x: f"{x//100:02}:{x%100:02}")
-
-    # Convert Date column from YYMMDD to YYYY-MM-DD
-    df['Date'] = df['Date'].astype(str).apply(lambda x: f"20{x[:2]}-{x[2:4]}-{x[4:]}")
-
-    # Invert the DataFrame
-    df = df.iloc[::-1].reset_index(drop=True)
-
-    # Combine Date and Time into a new Synoptic Time column
-    df['Synoptic Time'] = df['Date'] + ' ' + df['Time']
-
-    # Drop the original Date and Time columns
-    df = df.drop(columns=['Date', 'Time'])
-
-    # Convert Latitude and Longitude to appropriate signs
-    def convert_latitude(lat):
-        return -float(lat[:-1]) if lat.endswith('S') else float(lat[:-1])
-
-    def convert_longitude(lon):
-        return -float(lon[:-1]) if lon.endswith('W') else float(lon[:-1])
-
-    df['Latitude'] = df['Latitude'].apply(convert_latitude)
-    df['Longitude'] = df['Longitude'].apply(convert_longitude)
-
-    # Reorder the columns to exclude Name and Basin
-    df = df[['Id', 'Name', 'Synoptic Time', 'Latitude', 'Longitude', 'Intensity', 'Pressure']]
-
-    # Get the cyclone name and Id value
-    cyclone_name = df['Name'].iloc[0]  # Get the cyclone name (first entry)
-    cyclone_id = df['Id'].iloc[0]      # Get the cyclone Id (first entry)
-
-    print(f"Cyclone Name: {cyclone_name} ({cyclone_id})")
-
-    # Step 2: Use in-memory data instead of CSV for plotting
-    # Convert the DataFrame to a CSV format in memory (using StringIO) without saving to disk
-    buffer = StringIO()
-    df.to_csv(buffer, sep=',', index=False)
-    buffer.seek(0)
-
-    # Read the in-memory CSV data for further processing (to avoid saving a CSV file)
-    cyclone_data = buffer.getvalue()
-
-    # Create a DataFrame from the in-memory CSV content
-    track_data = pd.read_csv(StringIO(cyclone_data))
-
-    # Convert Synoptic Time to datetime for plotting
-    track_data['Synoptic Time'] = pd.to_datetime(track_data['Synoptic Time'])
-
-    # Step 3: Calculate max wind speed and time of occurrence
-    max_wind = track_data['Intensity'].max()
-    max_wind_time = track_data.loc[track_data['Intensity'].idxmax(), 'Synoptic Time']
-
-    # Step 4: Plot the Cyclone Track
-
-    # Define the conditions and corresponding colors for cyclone categories
-    prev_conditions = [
-        ("Invest Area", 'lime'),
-        ("Depression", 'steelblue'),
-        ("Deep Depression", 'deepskyblue'),
-        ("Cyclonic Storm", 'aqua'),
-        ("Category 1", 'lemonchiffon'),
-        ("Category 2", 'gold'),
-        ("Category 3", 'tomato'),
-        ("Category 4", 'fuchsia'),
-        ("Category 5", 'mediumpurple'),
-    ]
-
-    # Create the legend for previous conditions
-    legend_elements_prev = [
-        Line2D([0], [0], marker='o', color='w', markerfacecolor=color, markersize=8, label=condition, lw=0, mec='k')
-        for condition, color in prev_conditions
-    ]
-
-    # Increase the figure size (adjust the width and height as needed)
-    fig, ax = plt.subplots(figsize=(15, 10), dpi=300)
-
-
-Here's the complete revised code with the necessary changes to load the image from a URL correctly and process the cyclone data as before:
-
-python
-Copy code
-import requests
-import pandas as pd
-from io import StringIO
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-import numpy as np
-from PIL import Image
 import io
 import ftplib
 
@@ -323,6 +214,7 @@ if response.status_code == 200:
     # Upload the plot to the server
     with open(f"{cyclone_name}_1M.png", 'rb') as f:
         ftp.storbinary(f"STOR {cyclone_name.lower()} (1M).jpg", f)
+
     # Show the plot
     plt.show()
 
