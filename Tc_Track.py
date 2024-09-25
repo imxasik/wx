@@ -42,14 +42,14 @@ if response.status_code == 200:
     df = df.drop(columns=['Date', 'Time'])
 
     # Convert Latitude and Longitude to appropriate signs
-    #def convert_latitude(lat):
-        #return -float(lat[:-1]) if lat.endswith('S') else float(lat[:-1])
+    def convert_latitude(lat):
+        return -float(lat[:-1]) if lat.endswith('S') else float(lat[:-1])
 
-    #def convert_longitude(lon):
-        #return -float(lon[:-1]) if lon.endswith('W') else float(lon[:-1])
+    def convert_longitude(lon):
+        return -float(lon[:-1]) if lon.endswith('W') else float(lon[:-1])
 
-    #df['Latitude'] = df['Latitude'].apply(convert_latitude)
-    #df['Longitude'] = df['Longitude'].apply(convert_longitude)
+    df['Latitude'] = df['Latitude'].apply(convert_latitude)
+    df['Longitude'] = df['Longitude'].apply(convert_longitude)
 
     # Reorder the columns to exclude Name and Basin
     df = df[['Id', 'Name', 'Synoptic Time', 'Latitude', 'Longitude', 'Intensity', 'Pressure']]
@@ -117,8 +117,8 @@ if response.status_code == 200:
         background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
 
     # Define the latitude and longitude limits
-    lat_min, lat_max = 90S, 90N
-    lon_min, lon_max = 180W, 180E
+    lat_min, lat_max = -90, 90
+    lon_min, lon_max = -180, 180
 
     # Get the last latitude and longitude values
     last_lat = track_data["Latitude"].iloc[-1] - 1
