@@ -102,7 +102,7 @@ if response.status_code == 200:
     ]
 
     # Increase the figure size (adjust the width and height as needed)
-    fig, ax = plt.subplots(figsize=(18, 12), dpi=300)
+    fig, ax = plt.subplots(figsize=(15, 12), dpi=300)
 
     # Step 5: Load the background image from the URL
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
