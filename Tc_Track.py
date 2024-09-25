@@ -123,10 +123,10 @@ if response.status_code == 200:
     # Get the last latitude and longitude values
     first_lat = track_data["Latitude"].iloc[1]
     last_lat = track_data["Latitude"].iloc[-1]
-    last_lon = track_data["Longitude"].iloc[-1]
-    first_lon = track_data["Longitude"].iloc[1]
+    last_lon = track_data["Longitude"].iloc[-1] + 1
+    first_lon = track_data["Longitude"].iloc[1] - 1
     # Set the latitude and longitude limits based on the last values with a buffer
-    ax.set_xlim(first_lon + 5, last_lon -7)
+    ax.set_xlim(first_lon - 7, last_lon + 55)
     ax.set_ylim(first_lat - 2, last_lat + 2)
 
     # Set the extent of the background image
