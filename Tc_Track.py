@@ -198,6 +198,10 @@ if response.status_code == 200:
     # Adjust space between suptitle and title
     plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.945)
 
+     # Texts
+    ax.text(1.00, 1.01, "Max Wind: 35 KT", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
+    ax.text(0.00, 1.01, "Min Pressure: 990 MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
+
     # Set xlabel with correct indentation
     ax.set_xlabel(f"(1-MINUTE SUSTAINED WIND SCALE)")
 
