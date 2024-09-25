@@ -103,7 +103,7 @@ if response.status_code == 200:
     fig, ax = plt.subplots(figsize=(15, 10), dpi=300)
 
     # Load and downscale the background image
-    img = Image.open("../TCs/map.jpg")
+    img = Image.open("https://cdn.trackgen.codingcactus.codes/map.jpg")
     img = img.resize((int(img.width / 2), int(img.height / 2)), Image.Resampling.LANCZOS)  # Downscale by 2x
     background_image = np.array(img)
 
