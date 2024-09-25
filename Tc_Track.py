@@ -200,7 +200,7 @@ if response.status_code == 200:
     plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.935)
 
      # Texts
-    ax.text(1.00, 1.01, "PEAK TIME\n{maxtime}", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
+    ax.text(1.00, 1.01, f"PEAK TIME\n{maxtime}", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
     ax.text(0.00, 1.01, f"MAX WIND: {max_wind}KT\nMIN MSLP: 990MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
 
     # Set xlabel with correct indentation
