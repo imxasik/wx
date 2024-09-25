@@ -20,7 +20,7 @@ jobs:
         run: pip install --upgrade pip
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil requests ftplib pillow io
+        run: pip install matplotlib pandas ftputil requests pillow io
 
       - name: Run Manual Python Script
         run: python Tc Track.py
