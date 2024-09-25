@@ -191,12 +191,12 @@ if response.status_code == 200:
 
     # Check if 'Invest' is in the cyclone_name
     if 'Invest' in cyclone_name:
-        title_text = f'Xp Weather {storm_type} {cyclone_id.upper()} Track'
+        title_text = f'{storm_type} {cyclone_id.upper()} Track'
     else:
-        title_text = f'Xp Weather {storm_type} "{cyclone_name.upper()}" Track'
+        title_text = f'{storm_type} "{cyclone_name.upper()}" Track'
 
     # Adjust space between suptitle and title
-    plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.5)
+    plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=1.0)
 
      # Texts
     ax.text(1.00, 1.01, "PEAK TIME\n 12Z 25-Sep-2024", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
