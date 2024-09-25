@@ -177,7 +177,7 @@ if response.status_code == 200:
 
     maxtime = max_wind_time.strftime("%HZ UTC - %d %b %Y")
 
-    up = ax.text(0.01, 0.01, f"WIND SPEED: {max_wind}KT | {update_time}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
+    up = ax.text(0.01, 0.01, f"WIND SPEED: {max_wind}KT | {update_time.upper()}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
     up.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
     # Define storm category based on cyclone_id
