@@ -117,8 +117,8 @@ if response.status_code == 200:
         background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
 
     # Define the latitude and longitude limits
-    lat_min, lat_max = S90, N90
-    lon_min, lon_max = W180, E180
+    lat_min, lat_max = 90S, 90N
+    lon_min, lon_max = 180W, 180E
 
     # Get the last latitude and longitude values
     last_lat = track_data["Latitude"].iloc[-1] - 1
