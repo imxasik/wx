@@ -163,6 +163,7 @@ if response.status_code == 200:
     # Add the title and legend
     observed_start_time = track_data['Synoptic Time'].iloc[0].strftime("%HZ %d-%b-%Y")
     observed_end_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ %d-%b-%Y")
+    update_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ UTC - %d %b %Y")
 
     title = f"{observed_start_time} | {observed_end_time}"
     ax.set_title(title, fontsize=13, fontweight='bold', x=0.475, y=1.005, fontdict={'horizontalalignment': 'center'})
@@ -176,7 +177,7 @@ if response.status_code == 200:
 
     maxtime = max_wind_time.strftime("%HZ UTC - %d %b %Y")
 
-    up = ax.text(0.01, 0.01, f"MAX WIND SPEED: {max_wind}KT | {maxtime}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
+    up = ax.text(0.01, 0.01, f"WIND SPEED: {max_wind}KT | {update_time}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
     up.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
     # Define storm category based on cyclone_id
@@ -199,7 +200,7 @@ if response.status_code == 200:
     plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.935)
 
      # Texts
-    ax.text(1.00, 1.01, "PEAK TIME\n 12Z 25-Sep-2024", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
+    ax.text(1.00, 1.01, "PEAK TIME\n{maxtime}", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
     ax.text(0.00, 1.01, f"MAX WIND: {max_wind}KT\nMIN MSLP: 990MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
 
     # Set xlabel with correct indentation
