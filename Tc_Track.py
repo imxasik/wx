@@ -165,7 +165,7 @@ if response.status_code == 200:
     observed_end_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ %d-%b-%Y")
 
     title = f"{observed_start_time} | {observed_end_time}"
-    ax.set_title(title, fontsize=13, fontweight='bold', x=0.475, y=0.925, fontdict={'horizontalalignment': 'center'})
+    ax.set_title(title, fontsize=13, fontweight='bold', x=0.475, y=0.975, fontdict={'horizontalalignment': 'center'})
 
     legend = ax.legend(handles=legend_elements_prev, title='COLOR LEGENDS', loc='upper right')
     legend.get_title().set_fontweight('bold')
