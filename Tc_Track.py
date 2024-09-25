@@ -198,14 +198,14 @@ if response.status_code == 200:
         title_text = f'{storm_type.upper()} "{cyclone_name.upper()}" TRACK'
 
     # Adjust space between suptitle and title
-    ax.set_title(title_text, fontsize=20, fontweight='bold', color='red', x=0.475, y=1.01, fontdict={'horizontalalignment': 'center'})
+    ax.set_title(title_text, fontsize=24, fontweight='bold', color='red', x=0.475, y=1.01, fontdict={'horizontalalignment': 'center'})
    
     # Texts
     ax.text(1.00, 1.01, f"PEAK TIME\n{maxtime.upper()}", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
     ax.text(0.00, 1.01, f"MAX WIND: {max_wind}KT\nMIN MSLP: {max_mslp}MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
 
     # Set xlabel with correct indentation
-    ax.set_xlabel(f"Start: {observed_start_time.upper()} | End: {observed_end_time.upper()}")
+    ax.set_xlabel(f"Start: {observed_start_time.upper()} | End: {observed_end_time.upper()}", fontsize='14')
 
     # Add grid lines with opacity 0.5
     ax.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)
