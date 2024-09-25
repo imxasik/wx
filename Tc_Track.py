@@ -164,7 +164,7 @@ if response.status_code == 200:
     observed_start_time = track_data['Synoptic Time'].iloc[0].strftime("%HZ %d-%b-%Y")
     observed_end_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ %d-%b-%Y")
 
-    title = f"Formed: {observed_start_time} | Latest: {observed_end_time}"
+    title = f"{observed_start_time} | {observed_end_time}"
     ax.set_title(title, fontsize=13, fontweight='bold', x=0.475, fontdict={'horizontalalignment': 'center'})
 
     legend = ax.legend(handles=legend_elements_prev, title='COLOR LEGENDS', loc='upper right')
@@ -199,8 +199,8 @@ if response.status_code == 200:
     plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.945)
 
      # Texts
-    ax.text(1.00, 1.01, "Max Wind: 35 KT", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
-    ax.text(0.00, 1.01, "Min Pressure: 990 MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
+    ax.text(1.00, 1.01, "PEAK TIME\n 12Z 25-Sep-2024", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
+    ax.text(0.00, 1.01, "MAX WIND: 35KT\nMIN MSLP: 990MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
 
     # Set xlabel with correct indentation
     ax.set_xlabel(f"(1-MINUTE SUSTAINED WIND SCALE)")
