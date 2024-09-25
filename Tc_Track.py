@@ -127,7 +127,7 @@ if response.status_code == 200:
 
     # Set the latitude and longitude limits based on the last values with a buffer
     ax.set_xlim(last_lon - 7, last_lon + 10)
-    ax.set_ylim(first_lat - 5, last_lat + 5)
+    ax.set_ylim(first_lat - 2, last_lat + 2)
 
     # Set the extent of the background image
     ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
