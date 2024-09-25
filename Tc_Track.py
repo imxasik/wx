@@ -168,7 +168,7 @@ if response.status_code == 200:
     wind = track_data['Intensity'].iloc[-1]
     mslp = track_data['Pressure'].iloc[-1]
 
-    title = f"{observed_start_time} | {observed_end_time}"
+    title = f"{observed_start_time.upper()} | {observed_end_time.upper()}"
     ax.set_title(title, fontsize=14, fontweight='bold', x=0.475, y=1.005, fontdict={'horizontalalignment': 'center'})
 
     legend = ax.legend(handles=legend_elements_prev, title='COLOR LEGENDS', loc='upper right')
@@ -195,9 +195,9 @@ if response.status_code == 200:
 
     # Check if 'Invest' is in the cyclone_name
     if 'Invest' in cyclone_name:
-        title_text = f'{storm_type} {cyclone_id.upper()} Track'
+        title_text = f'{storm_type.upper()} {cyclone_id.upper()} TRACK'
     else:
-        title_text = f'{storm_type} "{cyclone_name.upper()}" Track'
+        title_text = f'{storm_type.upper()} "{cyclone_name.upper()}" TRACK'
 
     # Adjust space between suptitle and title
     plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.935)
