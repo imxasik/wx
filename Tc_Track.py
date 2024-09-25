@@ -101,7 +101,7 @@ if response.status_code == 200:
     ]
 
     # Increase the figure size (adjust the width and height as needed)
-    fig, ax = plt.subplots(figsize=(15, 10), dpi=300)
+    fig, ax = plt.subplots(figsize=(18, 12), dpi=300)
 
     # Step 5: Load the background image from the URL
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
@@ -124,8 +124,8 @@ if response.status_code == 200:
     last_lon = track_data["Longitude"].iloc[-1] + 3
 
     # Set the latitude and longitude limits based on the last values with a buffer
-    ax.set_xlim(last_lon - 10, last_lon + 10)
-    ax.set_ylim(last_lat - 10, last_lat + 10)
+    ax.set_xlim(last_lon - 7, last_lon + 10)
+    ax.set_ylim(last_lat - 7, last_lat + 10)
 
     # Set the extent of the background image
     ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
