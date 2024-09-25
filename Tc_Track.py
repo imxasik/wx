@@ -165,7 +165,7 @@ if response.status_code == 200:
     observed_end_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ %d-%b-%Y")
 
     title = f"{observed_start_time} | {observed_end_time}"
-    ax.set_title(title, fontsize=13, fontweight='bold', x=0.1, fontdict={'horizontalalignment': 'center'})
+    ax.set_title(title, fontsize=13, fontweight='bold', x=0.475, y=0.5 fontdict={'horizontalalignment': 'center'})
 
     legend = ax.legend(handles=legend_elements_prev, title='COLOR LEGENDS', loc='upper right')
     legend.get_title().set_fontweight('bold')
@@ -196,7 +196,7 @@ if response.status_code == 200:
         title_text = f'Xp Weather {storm_type} "{cyclone_name.upper()}" Track'
 
     # Adjust space between suptitle and title
-    plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.945)
+    plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=05)
 
      # Texts
     ax.text(1.00, 1.01, "PEAK TIME\n 12Z 25-Sep-2024", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
