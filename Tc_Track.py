@@ -156,8 +156,8 @@ if response.status_code == 200:
         else:
             marker_color = 'lime'
 
-        ax.plot([prev_lon, lon], [prev_lat, lat], linestyle='-', color='white', linewidth=0.7, zorder=1)
-        ax.plot(lon, lat, marker='o', color=marker_color, markersize=8, zorder=2, mec='k')
+        ax.plot([prev_lon, lon], [prev_lat, lat], linestyle='-', color='white', linewidth=0.6, zorder=1)
+        ax.plot(lon, lat, marker='o', color=marker_color, markersize=9, zorder=2, mec='k')
         prev_lat = lat
         prev_lon = lon
 
