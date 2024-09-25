@@ -121,7 +121,7 @@ if response.status_code == 200:
     lon_min, lon_max = -180, 180
 
     # Get the last latitude and longitude values
-    last_lat = track_data["Latitude"].iloc[-1] - 1
+    last_lat = track_data["Latitude"].iloc[-1] - 3
     last_lon = track_data["Longitude"].iloc[-1] + 1
 
     # Set the latitude and longitude limits based on the last values with a buffer
