@@ -201,7 +201,7 @@ if response.status_code == 200:
         title_text = f'{storm_type.upper()} "{cyclone_name.upper()}" TRACK'
 
     # Adjust space between suptitle and title
-    ax.text(0.50, 1.01, title_text, fontsize=20, color='red', fontweight='bold', ha="center")
+    ax.text(0.00, 1.01, title_text, fontsize=20, color='red', fontweight='bold', ha="center")
 
      # Texts
     ax.text(1.00, 1.01, f"PEAK TIME\n{maxtime.upper()}", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
