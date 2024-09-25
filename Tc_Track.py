@@ -78,7 +78,8 @@ if response.status_code == 200:
     # Step 3: Calculate max wind speed and time of occurrence
     max_wind = track_data['Intensity'].max()
     max_wind_time = track_data.loc[track_data['Intensity'].idxmax(), 'Synoptic Time']
-
+    max_mslp = track_data.loc[track_data['Intensity'].idxmax(), 'Pressure']
+    
     # Step 4: Plot the Cyclone Track
 
     # Define the conditions and corresponding colors for cyclone categories
@@ -163,12 +164,12 @@ if response.status_code == 200:
     # Add the title and legend
     observed_start_time = track_data['Synoptic Time'].iloc[0].strftime("%HZ %d-%b-%Y")
     observed_end_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ %d-%b-%Y")
-    update_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ %d-%b-%Y")
+    update_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ UTC %d-%b-%Y")
     wind = track_data['Intensity'].iloc[-1]
     mslp = track_data['Pressure'].iloc[-1]
 
     title = f"{observed_start_time} | {observed_end_time}"
-    ax.set_title(title, fontsize=13, fontweight='bold', x=0.475, y=1.005, fontdict={'horizontalalignment': 'center'})
+    ax.set_title(title, fontsize=14, fontweight='bold', x=0.475, y=1.005, fontdict={'horizontalalignment': 'center'})
 
     legend = ax.legend(handles=legend_elements_prev, title='COLOR LEGENDS', loc='upper right')
     legend.get_title().set_fontweight('bold')
@@ -177,9 +178,9 @@ if response.status_code == 200:
     cc = ax.text(0.99, 0.01, "© XP WEATHER", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
     cc.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
-    maxtime = max_wind_time.strftime("%HZ UTC - %d %b %Y")
+    maxtime = max_wind_time.strftime("%HZ %d-%b-%Y")
 
-    up = ax.text(0.01, 0.01, f"WIND SPEED: {wind}KT | PRESSURE: {mslp} |{update_time.upper()}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
+    up = ax.text(0.01, 0.01, f"WIND SPEED: {wind}KT | PRESSURE: {mslp} | {update_time.upper()}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
     up.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
     # Define storm category based on cyclone_id
@@ -203,7 +204,7 @@ if response.status_code == 200:
 
      # Texts
     ax.text(1.00, 1.01, f"PEAK TIME\n{maxtime.upper()}", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
-    ax.text(0.00, 1.01, f"MAX WIND: {max_wind}KT\nMIN MSLP: 990MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
+    ax.text(0.00, 1.01, f"MAX WIND: {max_wind}KT\nMIN MSLP: {max_mslp}MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
 
     # Set xlabel with correct indentation
     ax.set_xlabel(f"(1-MINUTE SUSTAINED WIND SCALE)")
