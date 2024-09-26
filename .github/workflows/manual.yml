@@ -23,4 +23,4 @@ jobs:
         run: pip install matplotlib pandas ftputil requests pillow bytesbufio
 
       - name: Run Manual Python Script
-        run: python Tc.py
+        run: python tc.py
