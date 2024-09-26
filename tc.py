@@ -66,7 +66,7 @@ def plot_cyclone_track(track_data, cyclone_id):
     last_lon = track_data["Longitude"].max()
     first_lon = track_data["Longitude"].min()
     # Set the latitude and longitude limits based on the last values with a buffer
-    ax.set_xlim(first_lon - 7, last_lon + 5)
+    ax.set_xlim(first_lon - 8, last_lon + 7)
     ax.set_ylim(first_lat - 3, last_lat + 4)
 
     # Set the extent of the background image
@@ -116,7 +116,7 @@ def plot_cyclone_track(track_data, cyclone_id):
     cc = ax.text(0.99, 0.01, "© XP WEATHER", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
     cc.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
-    maxtime = max_wind_time.strftime("%HZ %d-%b-%Y")
+    maxtime = max_wind_time.strftime("%HZ %d-%b")
 
     up = ax.text(0.01, 0.01, f"WIND SPEED: {wind}KT | PRESSURE: {mslp} | {update_time.upper()}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
     up.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
@@ -138,7 +138,7 @@ def plot_cyclone_track(track_data, cyclone_id):
         title_text = f'{storm_type.upper()} "{cyclone_name.upper()}" TRACK'
 
     # Adjust space between suptitle and title
-    ax.set_title(title_text, fontsize=20, fontweight='bold', color='red', x=0.475, y=1.015, fontdict={'horizontalalignment': 'center'})
+    ax.set_title(title_text, fontsize=20, fontweight='bold', color='red', x=0.5, y=1.015, fontdict={'horizontalalignment': 'center'})
    
     # Texts
     ax.text(1.00, 1.01, f"PEAK TIME\n{maxtime.upper()}", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
