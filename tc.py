@@ -42,7 +42,7 @@ def plot_cyclone_track(track_data, cyclone_id):
     ]
 
     # Increase the figure size (adjust the width and height as needed)
-    fig, ax = plt.subplots(figsize=(13, 10), dpi=300)
+    fig, ax = plt.subplots(figsize=(15, 10), dpi=300)
 
     # Step 5: Load the background image from the URL
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
