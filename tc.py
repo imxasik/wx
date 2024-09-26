@@ -7,6 +7,7 @@ from PIL import Image
 import numpy as np
 import ftplib
 import os
+import io
 
 # Allow larger images
 Image.MAX_IMAGE_PIXELS = None
