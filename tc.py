@@ -35,10 +35,18 @@ def plot_cyclone_track(track_data, cyclone_id):
     # Increase the figure size
     fig, ax = plt.subplots(figsize=(15, 10), dpi=300)
 
-    # Load and downscale the background image
-    img = Image.open("../TCs/map.jpg")
-    img = img.resize((int(img.width / 2), int(img.height / 2)), Image.Resampling.LANCZOS)
-    background_image = np.array(img)
+    # Step 5: Load the background image from the URL
+    image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
+    img_response = requests.get(image_url)
+
+    if img_response.status_code == 200:
+        img = Image.open(io.BytesIO(img_response.content))
+        img = img.resize((int(img.width / 2), int(img.height / 2)), Image.Resampling.LANCZOS)  # Downscale by 2x
+        background_image = np.array(img)
+    else:
+        print(f"Failed to retrieve the image. Status code: {img_response.status_code}")
+        background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
+
 
     # Define latitude and longitude limits
     last_lat = track_data["Latitude"].iloc[-1] - 3
