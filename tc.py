@@ -26,7 +26,7 @@ if response.status_code == 200:
         first_col = line.split()[0]  # Split by any whitespace to get the first column
         if 'al' in first_col.lower():
             print(f"Processing first column: {first_col}")
-
+            cyclone_id = {first_col}
             # Create the new URL using first_col and convert to uppercase as needed
             url2 = f"https://www.nrlmry.navy.mil/tcdat/tc2024/AL/{first_col.upper()}/txt/trackfile.txt"
 
