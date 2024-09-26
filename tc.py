@@ -14,7 +14,15 @@ Image.MAX_IMAGE_PIXELS = None
 
 # Function to plot the Cyclone Track
 def plot_cyclone_track(track_data, cyclone_id):
-    # Define conditions and corresponding colors for cyclone categories
+    # Add additional information
+# Step 3: Calculate max wind speed and time of occurrence
+    max_wind = track_data['Intensity'].max()
+    max_wind_time = track_data.loc[track_data['Intensity'].idxmax(), 'Synoptic Time']
+    max_mslp = track_data.loc[track_data['Intensity'].idxmax(), 'Pressure']
+    
+    # Step 4: Plot the Cyclone Track
+
+    # Define the conditions and corresponding colors for cyclone categories
     prev_conditions = [
         ("Invest Area", 'lime'),
         ("Depression", 'steelblue'),
@@ -33,8 +41,8 @@ def plot_cyclone_track(track_data, cyclone_id):
         for condition, color in prev_conditions
     ]
 
-    # Increase the figure size
-    fig, ax = plt.subplots(figsize=(15, 10), dpi=300)
+    # Increase the figure size (adjust the width and height as needed)
+    fig, ax = plt.subplots(figsize=(15, 12), dpi=300)
 
     # Step 5: Load the background image from the URL
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
@@ -48,18 +56,27 @@ def plot_cyclone_track(track_data, cyclone_id):
         print(f"Failed to retrieve the image. Status code: {img_response.status_code}")
         background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
 
+    # Define the latitude and longitude limits
+    lat_min, lat_max = -90, 90
+    lon_min, lon_max = -180, 180
 
-    # Define latitude and longitude limits
-    last_lat = track_data["Latitude"].iloc[-1] - 3
-    last_lon = track_data["Longitude"].iloc[-1] + 3
-    ax.set_xlim(last_lon - 10, last_lon + 10)
-    ax.set_ylim(last_lat - 10, last_lat + 10)
-    ax.imshow(background_image, extent=[-180, 180, -90, 90])
+    # Get the last latitude and longitude values
+    first_lat = track_data["Latitude"].iloc[1]
+    last_lat = track_data["Latitude"].iloc[-1]
+    last_lon = track_data["Longitude"].iloc[-1]
+    first_lon = track_data["Longitude"].iloc[1]
+    # Set the latitude and longitude limits based on the last values with a buffer
+    ax.set_xlim(last_lon - 6, last_lon + 9)
+    ax.set_ylim(first_lat - 1, last_lat + 2)
 
-    # Plot the cyclone track with conditional marker color
+    # Set the extent of the background image
+    ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
+
+    # Initialize variables for the first point
     prev_lat = track_data["Latitude"].iloc[0]
     prev_lon = track_data["Longitude"].iloc[0]
 
+    # Plot the cyclone track with conditional marker color and default black line color
     for lat, lon, intensity in zip(track_data["Latitude"], track_data["Longitude"], track_data["Intensity"]):
         if intensity > 136:
             marker_color = 'mediumpurple'
@@ -80,44 +97,72 @@ def plot_cyclone_track(track_data, cyclone_id):
         else:
             marker_color = 'lime'
 
-        ax.plot([prev_lon, lon], [prev_lat, lat], linestyle='-', color='white', linewidth=0.7, zorder=1)
-        ax.plot(lon, lat, marker='o', color=marker_color, markersize=8, zorder=2, mec='k')
-        prev_lat, prev_lon = lat, lon
+        ax.plot([prev_lon, lon], [prev_lat, lat], linestyle='-', color='white', linewidth=0.6, zorder=1)
+        ax.plot(lon, lat, marker='o', color=marker_color, markersize=9, zorder=2, mec='k')
+        prev_lat = lat
+        prev_lon = lon
 
-    # Add title and legend
-    observed_start_time = pd.to_datetime(track_data['Synoptic Time'].iloc[0]).strftime("%HZ %d-%b-%Y")
-    observed_end_time = pd.to_datetime(track_data['Synoptic Time'].iloc[-1]).strftime("%HZ %d-%b-%Y")
-    ax.set_title(f"Formed: {observed_start_time} | Latest: {observed_end_time}", fontsize=13, fontweight='bold', x=0.475)
+    # Add the title and legend
+    observed_start_time = track_data['Synoptic Time'].iloc[0].strftime("%HZ %d-%b-%Y")
+    observed_end_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ %d-%b-%Y")
+    update_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ UTC %d-%b-%Y")
+    wind = track_data['Intensity'].iloc[-1]
+    mslp = track_data['Pressure'].iloc[-1]
 
     legend = ax.legend(handles=legend_elements_prev, title='COLOR LEGENDS', loc='upper right')
     legend.get_title().set_fontweight('bold')
 
-    # Add additional information
-    max_wind_time = track_data['Synoptic Time'].iloc[track_data['Intensity'].idxmax()]
-    max_wind = track_data['Intensity'].max()
-    ax.text(0.99, 0.01, f"MAX WIND SPEED: {max_wind}KT | {max_wind_time.strftime('%HZ UTC - %d %b %Y')}", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
+    # Add custom text and wind speed info
+    cc = ax.text(0.99, 0.01, "© XP WEATHER", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
+    cc.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
-    # Save the plot as an image file
-    plot_filename = f"{cyclone_name}_1M.png"
-    plt.savefig(plot_filename, dpi=300, bbox_inches='tight')
-    
-    # Upload to FTP
-    try:
-        ftp = ftplib.FTP('ftpupload.net')
-        ftp.login('epiz_32144154', 'Im80K123')
-        ftp.cwd('htdocs/tc')
-        with open(plot_filename, 'rb') as f:
-            ftp.storbinary(f"STOR {cyclone_name.lower()} (1M).jpg", f)
-        print(f"Uploaded {plot_filename} to FTP server.")
-    except Exception as e:
-        print(f"Error uploading file: {e}")
-    finally:
-        ftp.quit()  # Ensure FTP session is closed
-    
-    # Clean up the local file
-    os.remove(plot_filename)
+    maxtime = max_wind_time.strftime("%HZ %d-%b-%Y")
 
-    plt.close()
+    up = ax.text(0.01, 0.01, f"WIND SPEED: {wind}KT | PRESSURE: {mslp} | {update_time.upper()}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
+    up.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
+
+    # Define storm category based on cyclone_id
+    if 'L' in cyclone_id or 'E' in cyclone_id:
+        storm_type = "Hurricane"
+    elif 'A' in cyclone_id or 'B' in cyclone_id:
+        storm_type = "Cyclone"
+    elif 'W' in cyclone_id:
+        storm_type = "Typhoon"
+    else:
+        storm_type = "Storm"  # Default if none of the conditions are met
+
+    # Check if 'Invest' is in the cyclone_name
+    if 'Invest' in cyclone_name:
+        title_text = f'{storm_type.upper()} {cyclone_id.upper()} TRACK'
+    else:
+        title_text = f'{storm_type.upper()} "{cyclone_name.upper()}" TRACK'
+
+    # Adjust space between suptitle and title
+    ax.set_title(title_text, fontsize=20, fontweight='bold', color='red', x=0.475, y=1.015, fontdict={'horizontalalignment': 'center'})
+   
+    # Texts
+    ax.text(1.00, 1.01, f"PEAK TIME\n{maxtime.upper()}", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
+    ax.text(0.00, 1.01, f"MAX WIND: {max_wind}KT\nMIN MSLP: {max_mslp}MB", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
+
+    # Set xlabel with correct indentation
+    ax.set_xlabel(f"START: {observed_start_time.upper()} | END: {observed_end_time.upper()}", fontsize='14', fontweight='bold')
+
+    # Add grid lines with opacity 0.5
+    ax.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)
+    
+    # Save the plot as an image file (e.g., PNG)
+    plt.savefig(f"{cyclone_name}_1M.png", dpi=300, bbox_inches='tight')
+    
+    ftp = ftplib.FTP('ftpupload.net')
+    ftp.login('epiz_32144154', 'Im80K123')
+    ftp.cwd('htdocs/tc')
+    
+    # Upload the plot to the server
+    with open(f"{cyclone_name}_1M.png", 'rb') as f:
+        ftp.storbinary(f"STOR {cyclone_name.lower()} (1M).jpg", f)
+
+    # Show the plot
+    plt.show()
 
 # Create an in-memory bytes buffer
 byte_stream = BytesIO()
