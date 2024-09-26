@@ -1,125 +1,19 @@
 import requests
 import pandas as pd
 from io import StringIO, BytesIO
-import os
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from PIL import Image
+import numpy as np
 import ftplib
-
-
-# Initialize a list to hold all DataFrames
-datasets = []
-
-# Initialize a byte stream to hold the CSV data
-csv_byte_stream = BytesIO()
-
-# Fetch data with SSL verification disabled
-response = requests.get('https://www.nrlmry.navy.mil/tcdat/sectors/updated_sector_file', verify=False)
-
-if response.status_code == 200:
-    print("Data fetched successfully.\n")
-
-    # Iterate through each line and extract first column values containing 'al'
-    for line in response.text.splitlines():
-        first_col = line.split()[0]  # Split by any whitespace to get the first column
-        if 'al' in first_col.lower():
-            print(f"Processing first column: {first_col}")
-            cyclone_id = {first_col}
-            # Create the new URL using first_col and convert to uppercase as needed
-            url2 = f"https://www.nrlmry.navy.mil/tcdat/tc2024/AL/{first_col.upper()}/txt/trackfile.txt"
-
-            # Fetch data from the second URL
-            response2 = requests.get(url2, verify=False)
-
-            if response2.status_code == 200:
-                print(f"Data fetched from {url2}.\n")
-
-                # Define the column names
-                columns = ["Id", "Name", "Date", "Time", "Latitude", "Longitude", "Basin", "Intensity", "Pressure"]
-
-                # Load the text data into a pandas dataframe
-                data = StringIO(response2.text)
-                df = pd.read_csv(data, delim_whitespace=True, header=None, names=columns)
-
-                # Ensure Time column is in the format 'HH:MM'
-                df['Time'] = df['Time'].astype(int).apply(lambda x: f"{x//100:02}:{x%100:02}")
-
-                # Convert Date column from YYMMDD to YYYY-MM-DD
-                df['Date'] = df['Date'].astype(str).apply(lambda x: f"20{x[:2]}-{x[2:4]}-{x[4:]}")
-
-                # Invert the DataFrame
-                df = df.iloc[::-1].reset_index(drop=True)
-
-                # Combine Date and Time into a new Synoptic Time column
-                df['Synoptic Time'] = df['Date'] + ' ' + df['Time']
-
-                # Drop the original Date and Time columns
-                df = df.drop(columns=['Date', 'Time'])
-
-                # Convert Latitude and Longitude to appropriate signs
-                def convert_latitude(lat):
-                    return -float(lat[:-1]) if lat.endswith('S') else float(lat[:-1])
-
-                def convert_longitude(lon):
-                    return -float(lon[:-1]) if lon.endswith('W') else float(lon[:-1])
-
-                df['Latitude'] = df['Latitude'].apply(convert_latitude)
-                df['Longitude'] = df['Longitude'].apply(convert_longitude)
-
-                # Reorder the columns to exclude Name and Basin
-                df = df[['Id', 'Name', 'Synoptic Time', 'Latitude', 'Longitude', 'Intensity', 'Pressure']]
-
-                # Get the cyclone name and Id value
-                cyclone_name = df['Name'].iloc[0]  # Get the cyclone name (first entry)
-                cyclone_id = df['Id'].iloc[0]      # Get the cyclone Id (first entry)
-
-                print(f"Cyclone Name: {cyclone_name} ({cyclone_id})")
-
-                # Append the DataFrame to the datasets list
-                datasets.append(df)
-
-                # Write the processed DataFrame to the byte stream
-                df.to_csv(csv_byte_stream, index=False)
-
-                # Reset the stream position to the beginning
-                csv_byte_stream.seek(0)
-    
+import os
 
 # Allow larger images
 Image.MAX_IMAGE_PIXELS = None
 
-
-# Function to fetch and process cyclone data
-def fetch_and_process_data(cyclone_id):
-    url = f"https://www.nrlmry.navy.mil/tcdat/tc2024/AL/{cyclone_id}/txt/trackfile.txt"
-    try:
-        response = requests.get(url, verify=False)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to fetch data for {cyclone_id}: {e}")
-        return None
-        
-        # Load data into DataFrame
-    data = StringIO(response.text)
-    columns = ["Id", "Name", "Date", "Time", "Latitude", "Longitude", "Basin", "Intensity", "Pressure"]
-    df = pd.read_csv(data, delim_whitespace=True, header=None, names=columns)
-
-    # Process Date and Time
-    df['Time'] = df['Time'].astype(int).apply(lambda x: f"{x//100:02}:{x%100:02}")
-    df['Date'] = df['Date'].astype(str).apply(lambda x: f"20{x[:2]}-{x[2:4]}-{x[4:]}")
-    df = df.iloc[::-1].reset_index(drop=True)
-    df['Synoptic Time'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
-    df['Latitude'] = df['Latitude'].apply(lambda x: -float(x[:-1]) if x.endswith('S') else float(x[:-1]))
-    df['Longitude'] = df['Longitude'].apply(lambda x: -float(x[:-1]) if x.endswith('W') else float(x[:-1]))
-
-    return df
-    
-    
-    # Function to plot the Cyclone Track
+# Function to plot the Cyclone Track
 def plot_cyclone_track(track_data, cyclone_id):
-    # Define the conditions and corresponding colors for cyclone categories
+    # Define conditions and corresponding colors for cyclone categories
     prev_conditions = [
         ("Invest Area", 'lime'),
         ("Depression", 'steelblue'),
@@ -138,35 +32,25 @@ def plot_cyclone_track(track_data, cyclone_id):
         for condition, color in prev_conditions
     ]
 
-    # Increase the figure size (adjust the width and height as needed)
+    # Increase the figure size
     fig, ax = plt.subplots(figsize=(15, 10), dpi=300)
 
     # Load and downscale the background image
     img = Image.open("../TCs/map.jpg")
-    img = img.resize((int(img.width / 2), int(img.height / 2)), Image.Resampling.LANCZOS)  # Downscale by 2x
+    img = img.resize((int(img.width / 2), int(img.height / 2)), Image.Resampling.LANCZOS)
     background_image = np.array(img)
 
-    # Define the latitude and longitude limits
-    lat_min, lat_max = -90, 90
-    lon_min, lon_max = -180, 180
-
-
-    # Get the last latitude and longitude values for adjusting limits
-    last_lat = track_data["Latitude"].iloc[-1]
-    last_lon = track_data["Longitude"].iloc[-1]
-
-    # Set the latitude and longitude limits based on the last values with a buffer
+    # Define latitude and longitude limits
+    last_lat = track_data["Latitude"].iloc[-1] - 3
+    last_lon = track_data["Longitude"].iloc[-1] + 3
     ax.set_xlim(last_lon - 10, last_lon + 10)
     ax.set_ylim(last_lat - 10, last_lat + 10)
+    ax.imshow(background_image, extent=[-180, 180, -90, 90])
 
-    # Set the extent of the background image
-    ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
-
-    # Initialize variables for the first point
+    # Plot the cyclone track with conditional marker color
     prev_lat = track_data["Latitude"].iloc[0]
     prev_lon = track_data["Longitude"].iloc[0]
 
-    # Plot the cyclone track with conditional marker color
     for lat, lon, intensity in zip(track_data["Latitude"], track_data["Longitude"], track_data["Intensity"]):
         if intensity > 136:
             marker_color = 'mediumpurple'
@@ -192,67 +76,93 @@ def plot_cyclone_track(track_data, cyclone_id):
         prev_lat, prev_lon = lat, lon
 
     # Add title and legend
-    observed_start_time = track_data['Synoptic Time'].iloc[0].strftime("%HZ %d-%b-%Y")
-    observed_end_time = track_data['Synoptic Time'].iloc[-1].strftime("%HZ %d-%b-%Y")
-
-    title = f"Formed: {observed_start_time} | Latest: {observed_end_time}"
-    ax.set_title(title, fontsize=13, fontweight='bold', x=0.475, fontdict={'horizontalalignment': 'center'})
+    observed_start_time = pd.to_datetime(track_data['Synoptic Time'].iloc[0]).strftime("%HZ %d-%b-%Y")
+    observed_end_time = pd.to_datetime(track_data['Synoptic Time'].iloc[-1]).strftime("%HZ %d-%b-%Y")
+    ax.set_title(f"Formed: {observed_start_time} | Latest: {observed_end_time}", fontsize=13, fontweight='bold', x=0.475)
 
     legend = ax.legend(handles=legend_elements_prev, title='COLOR LEGENDS', loc='upper right')
     legend.get_title().set_fontweight('bold')
 
-    # Add custom text and wind speed info
-    cc = ax.text(0.99, 0.01, "© XP WEATHER", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
-    cc.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
-
-    # Max wind speed information (this assumes you've calculated max_wind and max_wind_time)
-    max_wind = track_data['Intensity'].max()  # Update this logic as per your calculation
-    max_wind_time = track_data.loc[track_data['Intensity'].idxmax(), 'Synoptic Time']  # Get time for max wind
-    maxtime = max_wind_time.strftime("%HZ UTC - %d %b %Y")
-
-    up = ax.text(0.01, 0.01, f"MAX WIND SPEED: {max_wind}KT | {maxtime}", fontsize=14, ha="left", va="bottom", color='white', transform=ax.transAxes)
-    up.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
-
-    # Determine storm type
-    cyclone_name = track_data["Name"].iloc[0]  # Get cyclone name for title
-    if 'L' in cyclone_id or 'E' in cyclone_id:
-        storm_type = "Hurricane"
-    elif 'A' in cyclone_id or 'B' in cyclone_id:
-        storm_type = "Cyclone"
-    elif 'W' in cyclone_id:
-        storm_type = "Typhoon"
-    else:
-        storm_type = "Storm"  # Default if none of the conditions are met
-
-    # Set the main title
-    title_text = f'Xp Weather {storm_type} "{cyclone_name.upper()}" Track'
-    plt.suptitle(title_text, fontsize=20, color='red', fontweight='bold', y=0.945)
-
-    # Set xlabel and grid lines
-    ax.set_xlabel("(1-MINUTE SUSTAINED WIND SCALE)")
-    ax.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)
+    # Add additional information
+    max_wind_time = track_data['Synoptic Time'].iloc[track_data['Intensity'].idxmax()]
+    max_wind = track_data['Intensity'].max()
+    ax.text(0.99, 0.01, f"MAX WIND SPEED: {max_wind}KT | {max_wind_time.strftime('%HZ UTC - %d %b %Y')}", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
 
     # Save the plot as an image file
-    plot_file_name = os.path.join(base_dir, f"{cyclone_name}_1M.png")
-    plt.savefig(plot_file_name, dpi=300, bbox_inches='tight')
-
-    # Upload to FTP server
-    ftp = ftplib.FTP('ftpupload.net')
-    ftp.login('epiz_32144154', 'Im80K123')
-    ftp.cwd('htdocs/tc')
+    plot_filename = f"{cyclone_name}_1M.png"
+    plt.savefig(plot_filename, dpi=300, bbox_inches='tight')
     
-    # Upload the plot to the server
-    with open(plot_file_name, 'rb') as f:
-        ftp.storbinary(f"STOR {cyclone_name.lower()} (1M).jpg", f)
-    ftp.quit()
+    # Upload to FTP
+    try:
+        ftp = ftplib.FTP('ftpupload.net')
+        ftp.login('epiz_32144154', 'Im80K123')
+        ftp.cwd('htdocs/tc')
+        with open(plot_filename, 'rb') as f:
+            ftp.storbinary(f"STOR {cyclone_name.lower()} (1M).jpg", f)
+        print(f"Uploaded {plot_filename} to FTP server.")
+    except Exception as e:
+        print(f"Error uploading file: {e}")
+    finally:
+        ftp.quit()  # Ensure FTP session is closed
+    
+    # Clean up the local file
+    os.remove(plot_filename)
 
-# Main execution
-for cyclone_id in cyclone_id:
-    print(f"Processing data for {cyclone_id}...")
-    cyclone_data = fetch_and_process_data(cyclone_id)
+    plt.close()
 
-    if cyclone_data is not None:
-        data_files[cyclone_id] = cyclone_data
-        plot_cyclone_track(cyclone_data, cyclone_id)
+# Create an in-memory bytes buffer
+byte_stream = BytesIO()
 
-print("All cyclone data processed and plots generated.")
+# Fetch data with SSL verification disabled
+response = requests.get('https://www.nrlmry.navy.mil/tcdat/sectors/updated_sector_file', verify=False)
+
+if response.status_code == 200:
+    print("Data fetched successfully.\n")
+
+    tc_ids = []  # List to hold all tc_ids
+
+    for line in response.text.splitlines():
+        tc_id = line.split()[0]
+        if 'al' in tc_id.lower():
+            tc_ids.append(tc_id)  # Add the tc_id to the list
+            print(f"Processing TC ID: {tc_id}")
+
+            # Construct the URL and fetch data
+            url2 = f"https://www.nrlmry.navy.mil/tcdat/tc2024/AL/{tc_id.upper()}/txt/trackfile.txt"
+            response2 = requests.get(url2, verify=False)
+
+            if response2.status_code == 200:
+                print(f"Data fetched from {url2}.\n")
+
+                # Define column names
+                columns = ["Id", "Name", "Date", "Time", "Latitude", "Longitude", "Basin", "Intensity", "Pressure"]
+                data = StringIO(response2.text)
+                df = pd.read_csv(data, delim_whitespace=True, header=None, names=columns)
+
+                # Process Date and Time columns
+                df['Time'] = df['Time'].astype(int).apply(lambda x: f"{x//100:02}:{x%100:02}")
+                df['Date'] = df['Date'].astype(str).apply(lambda x: f"20{x[:2]}-{x[2:4]}-{x[4:]}")
+                df = df.iloc[::-1].reset_index(drop=True)
+                df['Synoptic Time'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
+                df = df.drop(columns=['Date', 'Time'])
+
+                # Convert Latitude and Longitude to appropriate signs
+                df['Latitude'] = df['Latitude'].apply(lambda lat: -float(lat[:-1]) if lat.endswith('S') else float(lat[:-1]))
+                df['Longitude'] = df['Longitude'].apply(lambda lon: -float(lon[:-1]) if lon.endswith('W') else float(lon[:-1]))
+
+                # Reorder and filter columns
+                df = df[['Id', 'Name', 'Synoptic Time', 'Latitude', 'Longitude', 'Intensity', 'Pressure']]
+
+                # Output cyclone information
+                cyclone_name, cyclone_id = df['Name'].iloc[0], df['Id'].iloc[0]
+                print(f"Cyclone Name: {cyclone_name} ({cyclone_id})")
+
+                # Save DataFrame to byte stream
+                df.to_csv(byte_stream, index=False)
+                byte_stream.seek(0)  # Reset the stream for reading
+
+                # Plotting the cyclone track
+                plot_cyclone_track(df, cyclone_id)
+
+else:
+    print("Failed to fetch data.")
