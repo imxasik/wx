@@ -42,7 +42,7 @@ def plot_cyclone_track(track_data, cyclone_id):
     ]
 
     # Increase the figure size (adjust the width and height as needed)
-    fig, ax = plt.subplots(figsize=(15, 12), dpi=300)
+    fig, ax = plt.subplots(figsize=(18, 13), dpi=300)
 
     # Step 5: Load the background image from the URL
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
@@ -66,7 +66,7 @@ def plot_cyclone_track(track_data, cyclone_id):
     last_lon = track_data["Longitude"].max()
     first_lon = track_data["Longitude"].min()
     # Set the latitude and longitude limits based on the last values with a buffer
-    ax.set_xlim(first_lon - 8, last_lon + 7)
+    ax.set_xlim(first_lon - 7, last_lon + 5)
     ax.set_ylim(first_lat - 3, last_lat + 4)
 
     # Set the extent of the background image
