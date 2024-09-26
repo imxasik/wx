@@ -13,7 +13,7 @@ Image.MAX_IMAGE_PIXELS = 300000000
 # Step 1: Fetch and Process Cyclone Data (Without saving to a CSV file)
 
 # URL of the data
-url = "https://www.nrlmry.navy.mil/tcdat/tc2024/IO/IO932024/txt/trackfile.txt"
+url = "https://www.nrlmry.navy.mil/tcdat/tc2024/AL/AL092024/txt/trackfile.txt"
 
 # Disable SSL certificate verification and fetch the data
 response = requests.get(url, verify=False)
