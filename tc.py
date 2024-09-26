@@ -61,13 +61,13 @@ def plot_cyclone_track(track_data, cyclone_id):
     lon_min, lon_max = -180, 180
 
     # Get the last latitude and longitude values
-    first_lat = track_data["Latitude"].iloc[1]
-    last_lat = track_data["Latitude"].iloc[-1]
-    last_lon = track_data["Longitude"].iloc[-1]
-    first_lon = track_data["Longitude"].iloc[1]
+    first_lat = track_data["Latitude"].min()
+    last_lat = track_data["Latitude"].max()
+    last_lon = track_data["Longitude"].max()
+    first_lon = track_data["Longitude"].min()
     # Set the latitude and longitude limits based on the last values with a buffer
-    ax.set_xlim(last_lon + 9, first_lon - 6)
-    ax.set_ylim(first_lat - 1, last_lat + 2)
+    ax.set_xlim(last_lon + 6, first_lon - 9)
+    ax.set_ylim(first_lat - 2, last_lat + 4)
 
     # Set the extent of the background image
     ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
