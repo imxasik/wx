@@ -41,37 +41,38 @@ def plot_cyclone_track(track_data, cyclone_id):
         for condition, color in prev_conditions
     ]
 
-    # Increase the figure size (adjust the width and height as needed)
+    # Fixed figure size
     fig, ax = plt.subplots(figsize=(18, 13), dpi=300)
 
-    # Step 5: Load the background image from the URL
+    # Step 5: Load and downscale the background image to avoid DDOS issues
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
     img_response = requests.get(image_url)
 
     if img_response.status_code == 200:
         img = Image.open(io.BytesIO(img_response.content))
-        img = img.resize((int(img.width / 2), int(img.height / 2)), Image.Resampling.LANCZOS)  # Downscale by 2x
+        # Aggressively downscale the image
+        img = img.resize((img.width // 4, img.height // 4), Image.Resampling.LANCZOS)
         background_image = np.array(img)
     else:
         print(f"Failed to retrieve the image. Status code: {img_response.status_code}")
         background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
 
-    # Define the latitude and longitude limits
-    lat_min, lat_max = -90, 90
-    lon_min, lon_max = -180, 180
+    # Get the latitude and longitude limits from the track data
+    lat_min, lat_max = track_data["Latitude"].min(), track_data["Latitude"].max()
+    lon_min, lon_max = track_data["Longitude"].min(), track_data["Longitude"].max()
 
-    # Get the last latitude and longitude values
-    first_lat = track_data["Latitude"].min()
-    last_lat = track_data["Latitude"].max()
-    last_lon = track_data["Longitude"].max()
-    first_lon = track_data["Longitude"].min()
-    # Set the latitude and longitude limits based on the last values with a buffer
-    ax.set_xlim(first_lon - 8, last_lon + 7)
-    ax.set_ylim(first_lat - 3, last_lat + 4)
+    lat_range = lat_max - lat_min
+    lon_range = lon_max - lon_min
+    aspect_ratio = lon_range / lat_range
+
+    # Resize background image based on the aspect ratio of the cyclone area
+    img_height = background_image.shape[0]
+    img_width = int(img_height * aspect_ratio)
+    resized_img = Image.fromarray(background_image).resize((img_width, img_height), Image.Resampling.LANCZOS)
+    background_image_resized = np.array(resized_img)
 
     # Set the extent of the background image
-    ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
-
+    ax.imshow(background_image_resized, extent=[lon_min, lon_max, lat_min, lat_max], aspect='auto')
     # Initialize variables for the first point
     prev_lat = track_data["Latitude"].iloc[0]
     prev_lon = track_data["Longitude"].iloc[0]
