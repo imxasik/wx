@@ -57,22 +57,33 @@ def plot_cyclone_track(track_data, cyclone_id):
         print(f"Failed to retrieve the image. Status code: {img_response.status_code}")
         background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
 
-    # Get the latitude and longitude limits from the track data
+
+    # Define the latitude and longitude limits
     lat_min, lat_max = track_data["Latitude"].min(), track_data["Latitude"].max()
     lon_min, lon_max = track_data["Longitude"].min(), track_data["Longitude"].max()
 
+    # Dynamically adjust the aspect ratio based on lat/lon extent
+    lon_range = lon_max + lon_min
     lat_range = lat_max - lat_min
-    lon_range = lon_max - lon_min
+
+    # Set figure width and height based on the aspect ratio
     aspect_ratio = lon_range / lat_range
+    width = 15  # Adjust base width
+    height = width / aspect_ratio
 
-    # Resize background image based on the aspect ratio of the cyclone area
-    img_height = background_image.shape[0]
-    img_width = int(img_height * aspect_ratio)
-    resized_img = Image.fromarray(background_image).resize((img_width, img_height), Image.Resampling.LANCZOS)
-    background_image_resized = np.array(resized_img)
+    # Create the figure and axes
+    fig, ax = plt.subplots(figsize=(width, height), dpi=300)
 
-    # Set the extent of the background image
-    ax.imshow(background_image_resized, extent=[lon_min, lon_max, lat_min, lat_max], aspect='auto')
+    # Resize and plot the background image
+    img = img.resize((int(img.width * aspect_ratio), img.height), Image.Resampling.LANCZOS)
+    background_image = np.array(img)
+    ax.imshow(background_image, extent=[-180, 180, -90, 90])
+
+    # Set the latitude and longitude limits with a small buffer
+    ax.set_xlim(lon_min - 5, lon_max + 3)
+    ax.set_ylim(lat_min - 2, lat_max + 3)
+    
+    
     # Initialize variables for the first point
     prev_lat = track_data["Latitude"].iloc[0]
     prev_lon = track_data["Longitude"].iloc[0]
