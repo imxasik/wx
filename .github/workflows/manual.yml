@@ -24,6 +24,3 @@ jobs:
 
       - name: Run Manual Python Script
         run: python tc_al.py
-        
-      - name: Run Manual Python Script
-        run: python tc_wp.py
