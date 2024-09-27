@@ -59,9 +59,6 @@ def plot_cyclone_track(track_data, cyclone_id):
     lat_min, lat_max = -90, 90
     lon_min, lon_max = -180, 180
 
-    # Create the figure and axes
-    fig, ax = plt.subplots(dpi=300)  # Will adjust figsize dynamically later
-
     # Set the extent of the background image
     ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
 
