@@ -41,49 +41,37 @@ def plot_cyclone_track(track_data, cyclone_id):
         for condition, color in prev_conditions
     ]
 
-    # Fixed figure size
-    #fig, ax = plt.subplots(figsize=(18, 13), dpi=300)
+    # Increase the figure size (adjust the width and height as needed)
+    fig, ax = plt.subplots(figsize=(18, 13), dpi=300)
 
-    # Step 5: Load and downscale the background image to avoid DDOS issues
+    # Step 5: Load the background image from the URL
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
     img_response = requests.get(image_url)
 
     if img_response.status_code == 200:
         img = Image.open(io.BytesIO(img_response.content))
-        # Aggressively downscale the image
-        img = img.resize((img.width // 1.5, img.height // 1.5), Image.Resampling.LANCZOS)
+        img = img.resize((int(img.width / 2), int(img.height / 2)), Image.Resampling.LANCZOS)  # Downscale by 2x
         background_image = np.array(img)
     else:
         print(f"Failed to retrieve the image. Status code: {img_response.status_code}")
         background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
 
-
     # Define the latitude and longitude limits
-    lat_min, lat_max = track_data["Latitude"].min(), track_data["Latitude"].max()
-    lon_min, lon_max = track_data["Longitude"].min(), track_data["Longitude"].max()
+    lat_min, lat_max = -90, 90
+    lon_min, lon_max = -180, 180
 
-    # Dynamically adjust the aspect ratio based on lat/lon extent
-    lon_range = lon_max + lon_min
-    lat_range = lat_max - lat_min
+    # Get the last latitude and longitude values
+    first_lat = track_data["Latitude"].min()
+    last_lat = track_data["Latitude"].max()
+    last_lon = track_data["Longitude"].max()
+    first_lon = track_data["Longitude"].min()
+    # Set the latitude and longitude limits based on the last values with a buffer
+    ax.set_xlim(first_lon - 7, last_lon + 5)
+    ax.set_ylim(first_lat - 3, last_lat + 4)
 
-    # Set figure width and height based on the aspect ratio
-    aspect_ratio = lon_range / lat_range
-    width = 15  # Adjust base width
-    height = width / aspect_ratio
+    # Set the extent of the background image
+    ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
 
-    # Create the figure and axes
-    fig, ax = plt.subplots(figsize=(width, height), dpi=300)
-
-    # Resize and plot the background image
-    img = img.resize((int(img.width * aspect_ratio), img.height), Image.Resampling.LANCZOS)
-    background_image = np.array(img)
-    ax.imshow(background_image, extent=[-180, 180, -90, 90])
-
-    # Set the latitude and longitude limits with a small buffer
-    ax.set_xlim(lon_min - 5, lon_max + 3)
-    ax.set_ylim(lat_min - 2, lat_max + 3)
-    
-    
     # Initialize variables for the first point
     prev_lat = track_data["Latitude"].iloc[0]
     prev_lon = track_data["Longitude"].iloc[0]
