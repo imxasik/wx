@@ -82,11 +82,10 @@ def plot_cyclone_track(track_data, cyclone_id):
     # Set the figure size based on the aspect ratio of the plot
     aspect_ratio = x_range / y_range
     fig_width = 15  # Fixed width
-    fig_height = aspect_ratio / fig_width
+    fig_height = fig_width / aspect_ratio
 
-    # Adjust figure size dynamically based on calculated height
-    fig.set_size_inches(fig_width, fig_height)
-
+    # Recreate the figure with the new figsize and replot everything
+    fig, ax = plt.subplots(figsize=(15, 12), dpi=300)
 
     
     # Initialize variables for the first point
