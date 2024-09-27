@@ -41,6 +41,8 @@ def plot_cyclone_track(track_data, cyclone_id):
         for condition, color in prev_conditions
     ]
 
+
+    
     # Step 5: Load the background image from the URL
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
     img_response = requests.get(image_url)
@@ -57,30 +59,36 @@ def plot_cyclone_track(track_data, cyclone_id):
     lat_min, lat_max = -90, 90
     lon_min, lon_max = -180, 180
 
+    # Create the figure and axes
+    fig, ax = plt.subplots(dpi=300)  # Will adjust figsize dynamically later
+
+    # Set the extent of the background image
+    ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
 
     # Get the first and last latitude and longitude values
-first_lat = track_data["Latitude"].min()
-last_lat = track_data["Latitude"].max()
-first_lon = track_data["Longitude"].min()
-last_lon = track_data["Longitude"].max()
+    first_lat = track_data["Latitude"].min()
+    last_lat = track_data["Latitude"].max()
+    first_lon = track_data["Longitude"].min()
+    last_lon = track_data["Longitude"].max()
 
-# Set the latitude and longitude limits
-ax.set_xlim(first_lon - 7, last_lon + 5)
-ax.set_ylim(first_lat - 3, last_lat + 4)
+    # Set the latitude and longitude limits
+    ax.set_xlim(first_lon - 7, last_lon + 5)
+    ax.set_ylim(first_lat - 3, last_lat + 4)
 
-# Calculate the aspect ratio of the map based on the latitude and longitude range
-x_range = last_lon + 5 - (first_lon - 7)
-y_range = last_lat + 4 - (first_lat - 3)
+    # Calculate the aspect ratio of the map based on the latitude and longitude range
+    x_range = last_lon + 5 - (first_lon - 7)
+    y_range = last_lat + 4 - (first_lat - 3)
 
-# Set the figure size based on the aspect ratio of the plot
-aspect_ratio = x_range / y_range
-fig_width = 18  # Fixed width (adjust as needed)
-fig_height = fig_width / aspect_ratio
+    # Set the figure size based on the aspect ratio of the plot
+    aspect_ratio = x_range / y_range
+    fig_width = 18  # Fixed width
+    fig_height = fig_width / aspect_ratio
 
-# Adjust figure size dynamically based on calculated height
-fig.set_size_inches(fig_width, fig_height)
+    # Adjust figure size dynamically based on calculated height
+    fig.set_size_inches(fig_width, fig_height)
 
 
+    
     # Initialize variables for the first point
     prev_lat = track_data["Latitude"].iloc[0]
     prev_lon = track_data["Longitude"].iloc[0]
