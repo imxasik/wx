@@ -51,7 +51,7 @@ def plot_cyclone_track(track_data, cyclone_id):
     if img_response.status_code == 200:
         img = Image.open(io.BytesIO(img_response.content))
         # Aggressively downscale the image
-        img = img.resize((img.width // 4, img.height // 4), Image.Resampling.LANCZOS)
+        img = img.resize((img.width // 1.5, img.height // 1.5), Image.Resampling.LANCZOS)
         background_image = np.array(img)
     else:
         print(f"Failed to retrieve the image. Status code: {img_response.status_code}")
