@@ -57,31 +57,28 @@ def plot_cyclone_track(track_data, cyclone_id):
         background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
 
 
-    # Define the latitude and longitude limits
+    # Define the latitude and longitude limits based on cyclone data
     lat_min, lat_max = track_data["Latitude"].min(), track_data["Latitude"].max()
     lon_min, lon_max = track_data["Longitude"].min(), track_data["Longitude"].max()
 
-    # Dynamically adjust the aspect ratio based on lat/lon extent
+    # Dynamically resize the background image based on the lat/lon range, while keeping plot size fixed
     lon_range = lon_max - lon_min
     lat_range = lat_max - lat_min
-
-    # Set figure width and height based on the aspect ratio
     aspect_ratio = lon_range / lat_range
-    width = 15  # Adjust base width
-    height = width / aspect_ratio
 
-    # Create the figure and axes
-    fig, ax = plt.subplots(figsize=(width, height), dpi=300)
+    # Resize the image to fit within the longitude/latitude range
+    img_resized = img.resize((int(img.width * aspect_ratio), img.height), Image.Resampling.LANCZOS)
+    background_image = np.array(img_resized)
 
-    # Resize and plot the background image
-    img = img.resize((int(img.width * aspect_ratio), img.height), Image.Resampling.LANCZOS)
-    background_image = np.array(img)
-    ax.imshow(background_image, extent=[-180, 180, -90, 90])
+    # Fixed figure size
+    fig, ax = plt.subplots(figsize=(15, 10), dpi=300)
 
     # Set the latitude and longitude limits with a small buffer
     ax.set_xlim(lon_min - 2, lon_max + 2)
     ax.set_ylim(lat_min - 2, lat_max + 2)
 
+    # Plot the resized background image
+    ax.imshow(background_image, extent=[-180, 180, -90, 90])
 
     
     # Initialize variables for the first point
