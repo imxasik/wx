@@ -172,7 +172,7 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     ax.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)
     
     # Save the plot as an image file (e.g., PNG)
-    plt.savefig(f"{cyclone_name}_1M.png", dpi=300, bbox_inches='tight')
+    plt.savefig(f"{cyclone_name}_{cyclone_id}.png", dpi=300, bbox_inches='tight')
     
     ftp = ftplib.FTP('ftpupload.net')
     ftp.login('epiz_32144154', 'Im80K123')
