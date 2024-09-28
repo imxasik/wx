@@ -17,13 +17,13 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Upgrade Pip
+        run: pip install --upgrade pip
+
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil lxml
+        run: pip install matplotlib pandas ftputil requests pillow bytesbufio
 
-      - name: Run Python Script
-        run: python Dhaka_temp.py
-
-      - name: Run Wind Python Script
+      - name: Run WP TC
         run: python Dhaka_wind.py
 
       - name: Run Wind Python Script
