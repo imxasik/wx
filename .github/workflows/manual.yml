@@ -22,8 +22,11 @@ jobs:
       - name: Install Dependencies
         run: pip install matplotlib pandas ftputil requests pillow bytesbufio
 
-      - name: Run Manual WP
-        run: python tc_wp.py
-
-      - name: Run Manual Al
-        run: python tc_al.py
+      - name: Run TC Scripts
+        run: |
+          python tc_io.py
+          python tc_wp.py
+          python tc_al.py
+          python tc_ep.py
+          python tc_cp.py
+          python tc_sh.py
