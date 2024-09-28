@@ -150,7 +150,7 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     # Define storm category based on cyclone_id
     if 'L' in cyclone_id or 'E' in cyclone_id:
         storm_type = "Hurricane"
-    elif 'A' in cyclone_id or 'B' in cyclone_id:
+    elif 'A' in cyclone_id or 'B' in cyclone_id or 'S' in cyclone_id:
         storm_type = "Cyclone"
     elif 'W' in cyclone_id:
         storm_type = "Typhoon"
@@ -158,8 +158,8 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
         storm_type = "Storm"  # Default if none of the conditions are met
 
     # Check if 'Invest' is in the cyclone_name
-    if 'Invest' in cyclone_name:
-        title_text = f'{storm_type.upper()} {cyclone_id.upper()} TRACK'
+    if 'INVEST' in cyclone_name:
+        title_text = f'INVEST "{cyclone_id.upper()}" TRACK'
     else:
         title_text = f'{storm_type.upper()} "{cyclone_name.upper()}" TRACK'
 
