@@ -3,11 +3,16 @@ import pandas as pd
 from io import StringIO, BytesIO
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from datetime import datetime
 from PIL import Image
 import numpy as np
 import ftplib
 import os
 import io
+
+# Get the current year
+year = datetime.now().strftime("%Y")
+
 
 # Allow larger images
 Image.MAX_IMAGE_PIXELS = None
@@ -173,10 +178,27 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     
     # Save the plot as an image file (e.g., PNG)
     plt.savefig(f"{cyclone_name}_{cyclone_id}.png", dpi=300, bbox_inches='tight')
+
+
+    # Define storm category based on cyclone_id
+    if 'A' in cyclone_id or 'B' in cyclone_id:
+        basin = "IO"
+    elif 'L' in cyclone_id:
+        basin = "AL"
+    elif 'W' in cyclone_id:
+        basin = "WP"
+    elif 'E' in cyclone_id:
+        basin = "EP"
+    elif 'C' in cyclone_id:
+        basin = "CP"
+    else:
+        basin = "SH"
+
+
     
     ftp = ftplib.FTP('ftpupload.net')
     ftp.login('epiz_32144154', 'Im80K123')
-    ftp.cwd('htdocs/tc')
+    ftp.cwd(f'htdocs/tc/{year}/{basin.upper()}')
     
     # Upload the plot to the server
     with open(f"{cyclone_name}_{cyclone_id}.png", 'rb') as f:
@@ -203,7 +225,7 @@ if response.status_code == 200:
             print(f"Processing TC ID: {tc_id}")
 
             # Construct the URL and fetch data
-            url2 = f"https://www.nrlmry.navy.mil/tcdat/tc2024/WP/{tc_id.upper()}/txt/trackfile.txt"
+            url2 = f"https://www.nrlmry.navy.mil/tcdat/tc{year}/{basin.upper()}/{tc_id.upper()}/txt/trackfile.txt"
             response2 = requests.get(url2, verify=False)
 
             if response2.status_code == 200:
