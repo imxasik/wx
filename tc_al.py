@@ -13,7 +13,7 @@ import io
 Image.MAX_IMAGE_PIXELS = None
 
 # Function to plot the Cyclone Track
-def plot_cyclone_track(track_data, cyclone_id):
+def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     # Add additional information
 # Step 3: Calculate max wind speed and time of occurrence
     max_wind = track_data['Intensity'].max()
@@ -40,11 +40,9 @@ def plot_cyclone_track(track_data, cyclone_id):
         Line2D([0], [0], marker='o', color='w', markerfacecolor=color, markersize=8, label=condition, lw=0, mec='k')
         for condition, color in prev_conditions
     ]
+    
 
-    # Increase the figure size (adjust the width and height as needed)
-    fig, ax = plt.subplots(figsize=(18, 13), layout="constrained", dpi=300)
-
-    # Step 5: Load the background image from the URL
+    # Load the background image from the URL
     image_url = "https://cdn.trackgen.codingcactus.codes/map.jpg"
     img_response = requests.get(image_url)
 
@@ -55,22 +53,45 @@ def plot_cyclone_track(track_data, cyclone_id):
     else:
         print(f"Failed to retrieve the image. Status code: {img_response.status_code}")
         background_image = np.zeros((1000, 1000, 3))  # Placeholder in case of error
+  
 
-    # Define the latitude and longitude limits
-    lat_min, lat_max = -90, 90
-    lon_min, lon_max = -180, 180
+    
+    # Get cyclone's lat/lon boundaries
+    lat_min = track_data["Latitude"].min()
+    lat_max = track_data["Latitude"].max()
+    lon_min = track_data["Longitude"].min()
+    lon_max = track_data["Longitude"].max()
 
-    # Get the last latitude and longitude values
-    first_lat = track_data["Latitude"].min()
-    last_lat = track_data["Latitude"].max()
-    last_lon = track_data["Longitude"].max()
-    first_lon = track_data["Longitude"].min()
-    # Set the latitude and longitude limits based on the last values with a buffer
-    ax.set_xlim(first_lon - 7, last_lon + 5)
-    ax.set_ylim(first_lat - 3, last_lat + 4)
+    # Calculate the center of the cyclone region
+    lat_center = (lat_max + lat_min) / 2
+    lon_center = (lon_max + lon_min) / 2
 
-    # Set the extent of the background image
-    ax.imshow(background_image, extent=[lon_min, lon_max, lat_min, lat_max])
+    # Apply zoom-out factor to the latitude and longitude ranges
+    lat_range = (lat_max - lat_min) * zoom_out_factor
+    lon_range = (lon_max - lon_min) * zoom_out_factor
+
+    # Calculate new min/max boundaries after zooming out
+    lat_min_zoomed = lat_center - lat_range / 2
+    lat_max_zoomed = lat_center + lat_range / 2
+    lon_min_zoomed = lon_center - lon_range / 2
+    lon_max_zoomed = lon_center + lon_range / 2
+
+    # Set figure dimensions and axis limits based on zoomed region
+    fig, ax = plt.subplots(figsize=(12, 10), dpi=300)
+
+    # Set axis limits for the cyclone region with zoom-out
+    ax.set_xlim(lon_min_zoomed, lon_max_zoomed)
+    ax.set_ylim(lat_min_zoomed, lat_max_zoomed)
+
+    # Set the extent of the background image to cover the entire world
+    world_extent = [-180, 180, -90, 90]  # Extent for the entire world map
+    ax.imshow(background_image, extent=world_extent, aspect='auto', zorder=0)
+
+ 
+# Set the aspect ratio to be equal
+    ax.set_aspect('equal', adjustable='datalim')
+
+    
 
     # Initialize variables for the first point
     prev_lat = track_data["Latitude"].iloc[0]
@@ -113,7 +134,7 @@ def plot_cyclone_track(track_data, cyclone_id):
     legend.get_title().set_fontweight('bold')
 
     # Add custom text and wind speed info
-    cc = ax.text(0.99, 0.01, "© XP WEATHER", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
+    cc = ax.text(0.99, 0.01, "Â© XP WEATHER", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
     cc.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
     maxtime = max_wind_time.strftime("%HZ %d-%b")
@@ -129,7 +150,7 @@ def plot_cyclone_track(track_data, cyclone_id):
     elif 'W' in cyclone_id:
         storm_type = "Typhoon"
     else:
-        storm_type = "Storm"  # Default if none of the conditions are met
+        storm_type = "Invest"  # Default if none of the conditions are met
 
     # Check if 'Invest' is in the cyclone_name
     if 'Invest' in cyclone_name:
@@ -161,8 +182,8 @@ def plot_cyclone_track(track_data, cyclone_id):
     with open(f"{cyclone_name}_1M.png", 'rb') as f:
         ftp.storbinary(f"STOR {cyclone_name.lower()} (1M).jpg", f)
 
-    # Show the plot
-    plt.show()
+# Call the function with zoom out factor
+#plot_cyclone_track(df, cyclone_id, zoom_out_factor=2.0)  # Zoom out by a factor of 2
 
 # Create an in-memory bytes buffer
 byte_stream = BytesIO()
