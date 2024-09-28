@@ -204,7 +204,7 @@ if response.status_code == 200:
 
     for line in response.text.splitlines():
         tc_id = line.split()[0]
-        if {basin.lower()} in tc_id.lower():
+        if f'{basin.lower()}' in tc_id.lower():
             tc_ids.append(tc_id)  # Add the tc_id to the list
             print(f"Processing TC ID: {tc_id}")
 
