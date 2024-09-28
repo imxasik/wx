@@ -159,7 +159,7 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
 
     # Check if 'Invest' is in the cyclone_name
     if 'INVEST' in cyclone_name:
-        title_text = f'INVEST "{cyclone_id.upper()}" TRACK'
+        title_text = f'{basin.upper()} INVEST "{cyclone_id.upper()}" TRACK'
     else:
         title_text = f'{storm_type.upper()} "{cyclone_name.upper()}" TRACK'
 
