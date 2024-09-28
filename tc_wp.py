@@ -12,7 +12,7 @@ import io
 
 # Get the current year
 year = datetime.now().strftime("%Y")
-
+basin = "wp"
 
 # Allow larger images
 Image.MAX_IMAGE_PIXELS = None
@@ -139,7 +139,7 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     legend.get_title().set_fontweight('bold')
 
     # Add custom text and wind speed info
-    cc = ax.text(0.99, 0.01, "Â© XP WEATHER", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
+    cc = ax.text(0.99, 0.01, "© XP WEATHER", fontsize=14, ha="right", va="bottom", color='white', transform=ax.transAxes)
     cc.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
     maxtime = max_wind_time.strftime("%HZ %d-%b")
@@ -179,22 +179,6 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     # Save the plot as an image file (e.g., PNG)
     plt.savefig(f"{cyclone_name}_{cyclone_id}.png", dpi=300, bbox_inches='tight')
 
-
-    # Define storm category based on cyclone_id
-    if 'A' in cyclone_id or 'B' in cyclone_id:
-        basin = "IO"
-    elif 'L' in cyclone_id:
-        basin = "AL"
-    elif 'W' in cyclone_id:
-        basin = "WP"
-    elif 'E' in cyclone_id:
-        basin = "EP"
-    elif 'C' in cyclone_id:
-        basin = "CP"
-    else:
-        basin = "SH"
-
-
     
     ftp = ftplib.FTP('ftpupload.net')
     ftp.login('epiz_32144154', 'Im80K123')
@@ -220,7 +204,7 @@ if response.status_code == 200:
 
     for line in response.text.splitlines():
         tc_id = line.split()[0]
-        if 'wp' in tc_id.lower():
+        if {basin.lower()} in tc_id.lower():
             tc_ids.append(tc_id)  # Add the tc_id to the list
             print(f"Processing TC ID: {tc_id}")
 
