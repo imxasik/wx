@@ -9,19 +9,26 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: '3.9'
 
       - name: Upgrade Pip
         run: pip install --upgrade pip
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil requests pillow bytesbufio
+        run: |
+          pip install -r requirements.txt
 
       - name: Run TC Scripts
         run: |
+          set -e  # Fail fast on errors
+          python tc_io.py
           python tc_wp.py
+          python tc_al.py
+          python tc_ep.py
+          python tc_cp.py
+          python tc_sh.py
