@@ -15,7 +15,7 @@ import io
 basin = "io"    # Basin code (
 year = "2023"   # Seasonal Year
 start_id = 1    # Starting TC ID
-end_id = 5      # Ending TC ID
+end_id = 10      # Ending TC ID
 
 
 tc_ids = [f"{basin}{i:02}{year}" for i in range(start_id, end_id + 1)]
@@ -198,7 +198,7 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     
     # Upload the plot to the server
     with open(f"{cyclone_name}_{cyclone_id}.png", 'rb') as f:
-        ftp.storbinary(f"STOR {cyclone_name.lower()} ({i}).jpg", f)
+        ftp.storbinary(f"STOR {cyclone_name.lower()}.jpg", f)
 
 # Call the function with zoom out factor
 #plot_cyclone_track(df, cyclone_id, zoom_out_factor=2.0)  # Zoom out by a factor of 2
