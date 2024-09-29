@@ -12,10 +12,10 @@ import io
 
 
 # Editable options
-basin = "wp"    # Basin code (
+basin = "al"    # Basin code (
 year = "2023"   # Seasonal Year
 start_id = 1    # Starting TC ID
-end_id = 50      # Ending TC ID
+end_id = 30      # Ending TC ID
 
 
 tc_ids = [f"{basin}{i:02}{year}" for i in range(start_id, end_id + 1)]
@@ -158,11 +158,11 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     up.set_bbox(dict(facecolor='white', alpha=0.4, edgecolor='none'))
 
     # Define storm category based on cyclone_id
-    if 'L' in cyclone_id or 'E' in cyclone_id:
+    if 'al' in cyclone_id or 'ep' in cyclone_id:
         storm_type = "Hurricane"
-    elif 'A' in cyclone_id or 'B' in cyclone_id or 'S' in cyclone_id:
+    elif 'io' in cyclone_id or 'sh' in cyclone_id:
         storm_type = "Cyclone"
-    elif 'W' in cyclone_id:
+    elif 'wp' in cyclone_id:
         storm_type = "Typhoon"
     else:
         storm_type = "Storm"  # Default if none of the conditions are met
