@@ -91,19 +91,17 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     # Set the extent of the background image to cover the entire world
     world_extent = [-180, 180, -90, 90]  # Extent for the entire world map
     ax.imshow(background_image, extent=world_extent, aspect='auto', zorder=0)
-
- 
-# Set the aspect ratio to be equal
-    ax.set_aspect('equal', adjustable='datalim')
-
     
-
+    # Set the aspect ratio to be equal
+    ax.set_aspect('equal', adjustable='datalim')
+   
     # Initialize variables for the first point
     prev_lat = track_data["Latitude"].iloc[0]
     prev_lon = track_data["Longitude"].iloc[0]
 
     # Plot the cyclone track with conditional marker color and default black line color
-    for lat, lon, intensity in zip(track_data["Latitude"], track_data["Longitude"], track_data["Intensity"]):
+    
+    for i, (lat, lon, intensity) in enumerate(zip(track_data["Latitude"], track_data["Longitude"], track_data["Intensity"])):
         if intensity > 136:
             marker_color = 'mediumpurple'
         elif intensity > 113:
@@ -123,8 +121,14 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
         else:
             marker_color = 'lime'
 
+        # Adjust marker size for the last point
+        if i == len(track_data) - 1:
+            marker_size = 12  # Larger size for the last point
+        else:
+            marker_size = 9  # Default size for other points
+
         ax.plot([prev_lon, lon], [prev_lat, lat], linestyle='-', color='white', linewidth=0.6, zorder=1)
-        ax.plot(lon, lat, marker='o', color=marker_color, markersize=9, zorder=2, mec='k')
+        ax.plot(lon, lat, marker='o', color=marker_color, markersize=marker_size, zorder=2, mec='k')
         prev_lat = lat
         prev_lon = lon
 
