@@ -24,9 +24,4 @@ jobs:
 
       - name: Run TC Scripts
         run: |
-          python tc_io.py
-          python tc_wp.py
-          python tc_al.py
-          python tc_ep.py
-          python tc_cp.py
-          python tc_sh.py
+          python old_tc.py
