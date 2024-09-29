@@ -131,9 +131,6 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
             marker_color = 'lime'
 
         # Adjust marker size for the last point
-        if i == len(track_data) - 1:
-            marker_size = 12  # Larger size for the last point
-        else:
             marker_size = 9  # Default size for other points
 
         ax.plot([prev_lon, lon], [prev_lat, lat], linestyle='-', color='white', linewidth=0.6, zorder=1)
