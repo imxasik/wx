@@ -1,4 +1,4 @@
-name: Instant Runs
+name: Manual Runs
 
 on:
   workflow_dispatch:  # This allows running the workflow manually from GitHub
@@ -16,9 +16,12 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Upgrade Pip
+        run: pip install --upgrade pip
+
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil scipy requests
+        run: pip install matplotlib pandas ftputil requests pillow bytesbufio
 
-
-      - name: Run Dhaka Temp Python Script
-        run: python soi_index.py
+      - name: Run TC Scripts
+        run: |
+          python tc_wp.py
