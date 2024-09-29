@@ -205,14 +205,9 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
 # Create an in-memory bytes buffer
 byte_stream = BytesIO()
 
-
-
-
-    for line in response.text.splitlines():
-        tc_id = line.split()[0]
-        if f'{basin.lower()}' in tc_id.lower():
-            tc_ids.append(tc_id)  # Add the tc_id to the list
-            print(f"Processing TC ID: {tc_id}")
+# Loop through existing tc_ids to fetch and process data
+for cyclone_id in tc_ids:
+    print(f"Processing TC ID: {cyclone_id}")
 
             # Construct the URL and fetch data
             url2 = f"https://www.nrlmry.navy.mil/tcdat/tc{year}/{basin.upper()}/{tc_id.upper()}/txt/trackfile.txt"
