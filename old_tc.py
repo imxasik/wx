@@ -189,7 +189,8 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
     # Add grid lines with opacity 0.5
     ax.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)
     
- 
+   # Save the plot as an image file (e.g., PNG)
+    plt.savefig(f"{cyclone_name}_{cyclone_id}.png", dpi=300, bbox_inches='tight')
     
     ftp = ftplib.FTP('ftpupload.net')
     ftp.login('epiz_32144154', 'Im80K123')
@@ -206,11 +207,11 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
 byte_stream = BytesIO()
 
 # Loop through existing tc_ids to fetch and process data
-for tc_id in tc_ids:
+for cyclone_id in tc_ids:
     print(f"Processing TC ID: {cyclone_id}")
 
     # Construct the URL using the existing tc_id
-    url2 = f"https://www.nrlmry.navy.mil/tcdat/tc{year}/{basin.upper()}/{tc_id.upper()}/txt/trackfile.txt"
+    url2 = f"https://www.nrlmry.navy.mil/tcdat/tc{year}/{basin.upper()}/{cyclone_id.upper()}/txt/trackfile.txt"
     response2 = requests.get(url2, verify=False)
 
     if response2.status_code == 200:
