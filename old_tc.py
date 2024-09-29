@@ -14,7 +14,7 @@ import io
 # Editable options
 basin = "io"    # Basin code (
 year = "2022"   # Seasonal Year
-start_id = 1    # Starting TC ID
+start_id = 5    # Starting TC ID
 end_id = 10      # Ending TC ID
 
 
