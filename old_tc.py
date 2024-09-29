@@ -206,11 +206,11 @@ def plot_cyclone_track(track_data, cyclone_id, zoom_out_factor=1.5):
 byte_stream = BytesIO()
 
 # Loop through existing tc_ids to fetch and process data
-for cyclone_id in tc_ids:
+for tc_id in tc_ids:
     print(f"Processing TC ID: {cyclone_id}")
 
     # Construct the URL using the existing tc_id
-    url2 = f"https://www.nrlmry.navy.mil/tcdat/tc{year}/{basin.upper()}/{cyclone_id.upper()}/txt/trackfile.txt"
+    url2 = f"https://www.nrlmry.navy.mil/tcdat/tc{year}/{basin.upper()}/{tc_id.upper()}/txt/trackfile.txt"
     response2 = requests.get(url2, verify=False)
 
     if response2.status_code == 200:
