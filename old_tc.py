@@ -209,42 +209,43 @@ byte_stream = BytesIO()
 for cyclone_id in tc_ids:
     print(f"Processing TC ID: {cyclone_id}")
 
-            # Construct the URL and fetch data
-            url2 = f"https://www.nrlmry.navy.mil/tcdat/tc{year}/{basin.upper()}/{tc_id.upper()}/txt/trackfile.txt"
-            response2 = requests.get(url2, verify=False)
+    # Construct the URL using the existing tc_id
+    url2 = f"https://www.nrlmry.navy.mil/tcdat/tc{year}/{basin.upper()}/{cyclone_id.upper()}/txt/trackfile.txt"
+    response2 = requests.get(url2, verify=False)
 
-            if response2.status_code == 200:
-                print(f"Data fetched from {url2}.\n")
+    if response2.status_code == 200:
+        print(f"Data fetched from {url2}.\n")
 
-                # Define column names
-                columns = ["Id", "Name", "Date", "Time", "Latitude", "Longitude", "Basin", "Intensity", "Pressure"]
-                data = StringIO(response2.text)
-                df = pd.read_csv(data, delim_whitespace=True, header=None, names=columns)
+        # Define column names
+        columns = ["Id", "Name", "Date", "Time", "Latitude", "Longitude", "Basin", "Intensity", "Pressure"]
+        data = StringIO(response2.text)
+        df = pd.read_csv(data, delim_whitespace=True, header=None, names=columns)
 
-                # Process Date and Time columns
-                df['Time'] = df['Time'].astype(int).apply(lambda x: f"{x//100:02}:{x%100:02}")
-                df['Date'] = df['Date'].astype(str).apply(lambda x: f"20{x[:2]}-{x[2:4]}-{x[4:]}")
-                df = df.iloc[::-1].reset_index(drop=True)
-                df['Synoptic Time'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
-                df = df.drop(columns=['Date', 'Time'])
+        # Process Date and Time columns
+        df['Time'] = df['Time'].astype(int).apply(lambda x: f"{x//100:02}:{x%100:02}")
+        df['Date'] = df['Date'].astype(str).apply(lambda x: f"20{x[:2]}-{x[2:4]}-{x[4:]}")
+        df = df.iloc[::-1].reset_index(drop=True)
+        df['Synoptic Time'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
+        df = df.drop(columns=['Date', 'Time'])
 
-                # Convert Latitude and Longitude to appropriate signs
-                df['Latitude'] = df['Latitude'].apply(lambda lat: -float(lat[:-1]) if lat.endswith('S') else float(lat[:-1]))
-                df['Longitude'] = df['Longitude'].apply(lambda lon: -float(lon[:-1]) if lon.endswith('W') else float(lon[:-1]))
+        # Convert Latitude and Longitude to appropriate signs
+        df['Latitude'] = df['Latitude'].apply(lambda lat: -float(lat[:-1]) if lat.endswith('S') else float(lat[:-1]))
+        df['Longitude'] = df['Longitude'].apply(lambda lon: -float(lon[:-1]) if lon.endswith('W') else float(lon[:-1]))
 
-                # Reorder and filter columns
-                df = df[['Id', 'Name', 'Synoptic Time', 'Latitude', 'Longitude', 'Intensity', 'Pressure']]
+        # Reorder and filter columns
+        df = df[['Id', 'Name', 'Synoptic Time', 'Latitude', 'Longitude', 'Intensity', 'Pressure']]
 
-                # Output cyclone information
-                cyclone_name, cyclone_id = df['Name'].iloc[0], df['Id'].iloc[0]
-                print(f"Cyclone Name: {cyclone_name} ({cyclone_id})")
+        # Output cyclone information
+        cyclone_name = df['Name'].iloc[0]
+        print(f"Cyclone Name: {cyclone_name} ({cyclone_id})")
 
-                # Save DataFrame to byte stream
-                df.to_csv(byte_stream, index=False)
-                byte_stream.seek(0)  # Reset the stream for reading
+        # Save DataFrame to byte stream
+        df.to_csv(byte_stream, index=False)
+        byte_stream.seek(0)  # Reset the stream for reading
 
-                # Plotting the cyclone track
-                plot_cyclone_track(df, cyclone_id)
+        # Plotting the cyclone track
+        plot_cyclone_track(df, cyclone_id)
 
-else:
-    print("Failed to fetch data.")
+    else:
+        print(f"Failed to fetch data for {cyclone_id}. Status code: {response2.status_code}")
+
