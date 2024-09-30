@@ -1,8 +1,8 @@
-name: Run Every 6Hrs
+name: Run Every 3Hrs
 
 on:
   schedule:
-    - cron: '45 0,6,12,18 * * *'  # Runs at 01:30, 07:30, 13:30, and 19:30 UTC
+    - cron: '45 0,2,6,8,12,14,18,20 * * *'  # Runs at 01:30, 07:30, 13:30, and 19:30 UTC
 
 jobs:
   generate-plot:
