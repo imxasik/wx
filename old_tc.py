@@ -12,7 +12,7 @@ import io
 
 
 # Editable options
-basin = "ep"    # Basin code (
+basin = "wp"    # Basin code (
 year = "2022"   # Seasonal Year
 start_id = 1    # Starting TC ID
 end_id = 20      # Ending TC ID
