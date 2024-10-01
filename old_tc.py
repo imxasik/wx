@@ -12,10 +12,10 @@ import io
 
 
 # Editable options
-basin = "io"    # Basin code (
+basin = "ep"    # Basin code (
 year = "2022"   # Seasonal Year
-start_id = 5    # Starting TC ID
-end_id = 10      # Ending TC ID
+start_id = 1    # Starting TC ID
+end_id = 20      # Ending TC ID
 
 
 tc_ids = [f"{basin}{i:02}{year}" for i in range(start_id, end_id + 1)]
