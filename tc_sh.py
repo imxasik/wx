@@ -10,9 +10,14 @@ import ftplib
 import os
 import io
 
-# Get the current year
-year = datetime.now().strftime("%Y")
+# Correcting the if statement to check the months properly
+if month in ["Oct", "Nov", "Dec"]:
+    year = str(int(datetime.now().strftime("%Y")) + 1)
+else:
+    year = datetime.now().strftime("%Y")
+
 basin = "sh"
+
 
 # Allow larger images
 Image.MAX_IMAGE_PIXELS = None
