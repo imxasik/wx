@@ -10,6 +10,9 @@ import ftplib
 import os
 import io
 
+# Get the current month and year
+month = datetime.now().strftime("%b")
+
 # Correcting the if statement to check the months properly
 if month in ["Oct", "Nov", "Dec"]:
     year = str(int(datetime.now().strftime("%Y")) + 1)
