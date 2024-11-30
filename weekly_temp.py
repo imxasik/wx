@@ -22,32 +22,29 @@ if response.status_code == 200:
     # Convert the 'Date' column to datetime format
     df['Date'] = pd.to_datetime(df['Date'])
 
-    # Group data by date and calculate daily mean temperature
-    daily_mean = df.groupby(df['Date'].dt.date)['Ta'].mean()
+    # Group data by week and calculate weekly mean temperature
+    weekly_mean = df.groupby(df['Date'].dt.to_period('W')).agg({'Ta': 'mean'})
 
-    # Calculate weekly mean temperature
-    weekly_mean = daily_mean.resample('W').mean()
-
-    # Select only the latest 12 weeks of data
-    data = weekly_mean.iloc[-12:]
+    # Select only the latest 26 weeks of data (roughly 180 days)
+    data = weekly_mean.iloc[-26:]
 
     # Detrend the data
-    data_dt = detrend(data.values)
+    data_dt = detrend(data['Ta'].values)
 
     # Design Part start from here
     fig = plt.figure(figsize=(11, 8), dpi=300)
     ax = fig.add_subplot()
 
-    font1 = {'family': 'serif', 'color': 'purple', 'size': 15, 'weight': 'bold'}
-    font2 = {'family': 'serif', 'color': 'blue', 'size': 15}
+    font1 = {'family':'serif','color':'purple','size':15, 'weight':'bold'}
+    font2 = {'family':'serif','color':'blue','size':15}
 
     # Plotting
-    ax.plot(data.index, data.values, '-o', label='Weekly Mean Temperature', color='black', linewidth=0.9, markersize=5)
-    ax.plot(data.index, data_dt, '-o', label='Weekly Detrend Mean', color='brown', linewidth=0.9, markersize=5)
+    ax.plot(data.index.astype(str), data['Ta'].values, '-o', label='Weekly Mean', color='black', linewidth=0.9, markersize=5)
+    ax.plot(data.index.astype(str), data_dt, '-o', label='Weekly Detrend Mean', color='brown', linewidth=0.9, markersize=5)
 
     # Title and labels
     plt.suptitle('2-Meter Global Temperature Anomaly', fontsize=20, color='red', fontweight='bold') 
-    ax.set_title(f"Weekly Trend: {data.iloc[-1]:.2f}°C | Weekly Detrend: {data_dt[-1]:.2f}°C", fontsize=14, fontname='serif')
+    ax.set_title(f"Weekly Trend: {data['Ta'].iloc[-1]:.2f}°C | Weekly Detrend: {data_dt[-1]:.2f}°C", fontsize=14, fontname='serif')
     ax.set_xlabel(f"\nData From {data.index[0]} To {data.index[-1]}", fontdict=font2)
     ax.set_ylabel("Temperature Anomaly(°C)", fontdict=font2)
 
@@ -57,7 +54,7 @@ if response.status_code == 200:
     plt.text(0.99, 0.01, "Made by http://fb.com/xpweather", fontsize=12, ha="right", va="bottom", color='.4', zorder=-1, transform=plt.gca().transAxes)
 
     # Set xlim without padding and extend the right limit slightly
-    ax.set_xlim(data.index[0], data.index[-1] + pd.Timedelta(days=7))
+    ax.set_xlim(data.index[0], data.index[-1] + pd.Timedelta(weeks=1))
 
     # Legend
     ax.legend()
@@ -85,9 +82,8 @@ if response.status_code == 200:
     with ftplib.FTP(ftp_host) as ftp:
         ftp.login(ftp_username, ftp_password)
         ftp.cwd('htdocs/wx')  # Change directory to your desired location on the FTP server
-        ftp.storbinary('STOR dt_weekly.jpg', plot_buffer)
+        ftp.storbinary('STOR dt.jpg', plot_buffer)
 
-    # Show the plot
     plt.show()
 
 else:
