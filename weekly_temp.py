@@ -4,6 +4,7 @@ from scipy.signal import detrend
 import requests
 import io
 import ftplib
+import os  # For secure environment variables handling
 
 # Define URL and custom headers
 url = 'https://climatlas.com/temperature/jra55/JRA55_global_1958_2023.csv'
@@ -22,16 +23,22 @@ if response.status_code == 200:
     # Convert the 'Date' column to datetime format
     df['Date'] = pd.to_datetime(df['Date'])
 
-    # Group data by week and calculate weekly mean temperature
-    weekly_mean = df.groupby(df['Date'].dt.to_period('W')).agg({'Ta': 'mean'})
-
-    # Select only the latest 26 weeks of data (roughly 180 days)
-    data = weekly_mean.iloc[-26:]
-
+    # Group data by date and calculate daily mean temperature
+    daily_mean = df.groupby(df['Date'].dt.date)['Ta'].mean()
+    
+    # Calculate weekly mean
+    weekly_mean = daily_mean.rolling(window=7).mean()
+    
+    # Select only the latest 180 days of data
+    data = daily_mean.iloc[-180:]
+    
     # Detrend the data
-    data_dt = detrend(data['Ta'].values)
-
-    # Design Part start from here
+    data_dt = detrend(data.values)
+    
+    # Convert index to datetime for proper plotting
+    data.index = pd.to_datetime(data.index)
+    
+    # Design Part
     fig = plt.figure(figsize=(11, 8), dpi=300)
     ax = fig.add_subplot()
 
@@ -39,32 +46,32 @@ if response.status_code == 200:
     font2 = {'family':'serif','color':'blue','size':15}
 
     # Plotting
-    ax.plot(data.index.astype(str), data['Ta'].values, '-o', label='Weekly Mean', color='black', linewidth=0.9, markersize=5)
-    ax.plot(data.index.astype(str), data_dt, '-o', label='Weekly Detrend Mean', color='brown', linewidth=0.9, markersize=5)
-
+    ax.plot(data.index, data.values, '-o', label='Daily Trend Mean', color='black', linewidth=0.9, markersize=5)
+    ax.plot(data.index, data_dt, '-o', label='Daily Detrend Mean', color='brown', linewidth=0.9, markersize=5)
+    
     # Title and labels
     plt.suptitle('2-Meter Global Temperature Anomaly', fontsize=20, color='red', fontweight='bold') 
-    ax.set_title(f"Weekly Trend: {data['Ta'].iloc[-1]:.2f}°C | Weekly Detrend: {data_dt[-1]:.2f}°C", fontsize=14, fontname='serif')
+    ax.set_title(f"Daily Trend: {data.iloc[-1]:.2f}°C | Daily Detrend: {data_dt[-1]:.2f}°C", fontsize=14, fontname='serif')
     ax.set_xlabel(f"\nData From {data.index[0]} To {data.index[-1]}", fontdict=font2)
-    ax.set_ylabel("Temperature Anomaly(°C)", fontdict=font2)
-
+    ax.set_ylabel("Temperature Anomaly (°C)", fontdict=font2)
+    
     # Texts
     ax.text(1.00, 1.01, "(1990-2020 Climo)", fontsize=14, ha="right", va="bottom", color='.1', transform=ax.transAxes)
     ax.text(0.00, 1.01, "JRA-JRA55-3Q", fontsize=14, ha="left", va="bottom", color='.1', transform=ax.transAxes)
     plt.text(0.99, 0.01, "Made by http://fb.com/xpweather", fontsize=12, ha="right", va="bottom", color='.4', zorder=-1, transform=plt.gca().transAxes)
-
+    
     # Set xlim without padding and extend the right limit slightly
-    ax.set_xlim(data.index[0], data.index[-1] + pd.Timedelta(weeks=1))
-
+    ax.set_xlim(data.index[0], data.index[-1] + pd.Timedelta(days=1))
+    
     # Legend
     ax.legend()
-
+    
     # Customize grid lines
     ax.grid(True, linewidth=0.6, linestyle='--', color='gray')
-
+    
     # Add horizontal line at y=0
     ax.axhline(0, color='gray', linewidth=1.0)
-
+    
     # Improve spacing
     plt.tight_layout()
 
@@ -73,10 +80,10 @@ if response.status_code == 200:
     plt.savefig(plot_buffer, format="jpg", transparent=True)
     plot_buffer.seek(0)
 
-    # FTP Server Details
+    # FTP Server Details - Use environment variables for security
     ftp_host = "ftpupload.net"
-    ftp_username = "epiz_32144154"
-    ftp_password = "Im80K123"
+    ftp_username = os.getenv("FTP_USERNAME", "epiz_32144154")
+    ftp_password = os.getenv("FTP_PASSWORD", "Im80K123")
 
     # Connect to the FTP server and upload the plot directly
     with ftplib.FTP(ftp_host) as ftp:
@@ -85,6 +92,5 @@ if response.status_code == 200:
         ftp.storbinary('STOR dt.jpg', plot_buffer)
 
     plt.show()
-
 else:
     print("Failed to fetch data from the website. Status code:", response.status_code)
