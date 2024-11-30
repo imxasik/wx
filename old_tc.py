@@ -12,7 +12,7 @@ import io
 
 
 # Editable options
-basin = "io"    # Basin code (
+basin = "al"    # Basin code (
 year = "2021"   # Seasonal Year
 start_id = 1    # Starting TC ID
 end_id = 20      # Ending TC ID
