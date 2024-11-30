@@ -24,4 +24,4 @@ jobs:
 
       - name: Run TC Scripts
         run: |
-          python tc_sh.py
+          python old_tc.py
