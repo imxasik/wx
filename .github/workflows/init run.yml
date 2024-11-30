@@ -19,12 +19,7 @@ jobs:
       - name: Install Dependencies
         run: pip install matplotlib pandas ftputil scipy requests
 
-      - name: Run Python Script
-        run: python soi7ma.py
 
       - name: Run Daily Temp Script
-        run: python daily_temp.py
-
-      - name: Run SOI Script
-        run: python soi_index.py
+        run: python weekly_temp.py
         
