@@ -20,7 +20,7 @@ jobs:
         run: pip install --upgrade pip
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil requests pillow bytesbufio
+        run: pip install matplotlib pandas ftputil requests pillow bytesbufio scipy
 
       - name: Run TC Scripts
         run: |
