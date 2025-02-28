@@ -5,6 +5,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import requests
 from io import StringIO
 import ftplib
+import io
 
 # Function to fetch and parse RMM data from NOAA
 def fetch_rmm_data():
