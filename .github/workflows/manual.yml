@@ -12,16 +12,18 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: '3.9'
 
       - name: Upgrade Pip
         run: pip install --upgrade pip
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas ftputil requests pillow bytesbufio scipy
-
-      - name: Run TC Scripts
         run: |
+          pip install -r requirements.txt
+
+      - name: Run Scripts
+        run: |
+          set -e  # Fail fast on errors
           python mjo.py
