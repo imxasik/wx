@@ -1,93 +1,118 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+from matplotlib.colors import LinearSegmentedColormap
 import requests
-import pandas as pd
-import matplotlib.dates as mdates
-from datetime import datetime, timedelta
-import io
+from io import StringIO
 import ftplib
 
-today = datetime.today()
-up = today.strftime("%d %b %Y")
-end = datetime.today() - timedelta(days=2)
-end = end.strftime("%d %b %Y")
-opn = datetime.today() - timedelta(days=61)
-opn = opn.strftime("%d %b %Y")
+# Function to fetch and parse RMM data from NOAA
+def fetch_rmm_data():
+    url = "https://psl.noaa.gov/mjo/mjoindex/vpm.1x.txt"
+    try:
+        response = requests.get(url)
+        data = response.text
+        lines = data.splitlines()[1:]  # Skip first header line
+        dates, rmm1, rmm2 = [], [], []
+        for line in lines:
+            cols = line.split()
+            if len(cols) >= 7:
+                dates.append(f"{cols[2]}-{cols[1]}-{cols[0]}")
+                rmm1.append(float(cols[4]))  # RMM2 as RMM1
+                rmm2.append(float(cols[5]))  # RMM3 as RMM2
+        return np.array(dates), np.array(rmm1), np.array(rmm2)
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        return None, None, None
 
-url = 'https://ds.data.jma.go.jp/tcc/tcc/products/clisys/mjo/figs/olr0-sst1_1990-2020/rmm8.csv'
+# Fetch the data
+dates, rmm1, rmm2 = fetch_rmm_data()
 
-r = requests.get(url)
-open('../MJO Data.csv', 'wb').write(r.content)
-dl = pd.read_csv('../MJO Data.csv')
+# Fallback sample data if fetch fails
+if dates is None or len(dates) == 0:
+    print("Fetch failed, using sample data instead.")
+    dates = ["2025-01-01", "2025-01-02", "2025-01-03", "2025-01-04", "2025-01-05"]
+    rmm1 = [1.0, 1.5, 0.5, -0.5, -1.0]
+    rmm2 = [0.5, 1.0, 1.5, 1.0, 0.0]
+else:
+    print(f"Successfully fetched {len(dates)} data points.")
 
+# Limit to last 40 days
+if len(dates) > 40:
+    dates = dates[-40:]
+    rmm1 = rmm1[-40:]
+    rmm2 = rmm2[-40:]
 
-#dy = df['#year'].iloc[-1]
-#dl = df[df['#year'] == dy]
-df = dl.iloc[-60:]
+# Flip RMM1 horizontally
+rmm1 = -rmm1
 
+# Define start and end points
+start_date, end_date = dates[0], dates[-1]
 
-x = df.iloc[:, 6]
-y = df.iloc[:, 7]
-z = df.iloc[:, 2]
+# Create figure with a subtle gradient background
+fig, ax = plt.subplots(figsize=(8, 8), facecolor='#f0f2f5')
+ax.set_facecolor('#f7f9fc')
 
+# Gradient trajectory line
+points = np.array([rmm1, rmm2]).T.reshape(-1, 1, 2)
+segments = np.concatenate([points[:-1], points[1:]], axis=1)
+norm = plt.Normalize(0, len(rmm1)-1)
+lc = LineCollection(segments, cmap='viridis', norm=norm, linewidth=1.0, alpha=0.8)
+lc.set_array(np.arange(len(rmm1)))
+ax.add_collection(lc)
 
-xa = x.iloc[:1]
-xb = y.iloc[:1]
-ya = x.iloc[-1:]
-yb = y.iloc[-1:]
- 
+# Scatter points with edge
+plt.scatter(rmm1, rmm2, c=np.arange(len(rmm1)), cmap='viridis', s=40, edgecolor='k', linewidth=0.5, zorder=5)
 
-employee = ["EAST 1", "", "WEST 1", ""]
+# Mark start and end points
+plt.scatter(rmm1[0], rmm2[0], c='limegreen', s=100, marker='*', edgecolor='k', label=f'Start: {start_date}', zorder=10)
+plt.scatter(rmm1[-1], rmm2[-1], c='crimson', s=100, marker='X', edgecolor='k', label=f'End: {end_date}', zorder=10)
 
-font1 = {'family':'serif','color':'purple','size':20, 'weight':'bold'}
-font2 = {'family':'serif','color':'blue','size':20}
+# Grid lines and unit circle
+ax.axhline(0, color='gray', linestyle='--', linewidth=0.8, alpha=1.0)
+ax.axvline(0, color='gray', linestyle='--', linewidth=0.8, alpha=1.0)
+for i in [-3, -2, -1, 1, 2, 3]:
+    ax.axhline(i, color='gray', linestyle='--', linewidth=0.5, alpha=0.3)
+    ax.axvline(i, color='gray', linestyle='--', linewidth=0.5, alpha=0.3)
+circle = plt.Circle((0, 0), 1, color='black', fill=False, linestyle='-', linewidth=1.0, alpha=0.7)
+ax.add_artist(circle)
 
- 
-a = [2, 3, 2 ,3, 2, 3, 2, 3]
-b = [0, 0, 90, 90, 180, 180, 270, 270]
-  
-x = [x/180.0*3.141593 for x in x]
-b = [x/180.0*3.141593 for x in b]
-xa = [x/180.0*3.141593 for x in xa]
-ya = [x/180.0*3.141593 for x in ya]
+# Phase boundaries
+ax.plot([-4, 4], [4, -4], 'k--', linewidth=0.8, alpha=0.5)
+ax.plot([-4, 4], [-4, 4], 'k--', linewidth=0.8, alpha=0.5)
 
-fig = plt.figure(figsize=(12, 13), dpi=300)
-ax = fig.add_subplot(polar = True)
-ax.set_theta_zero_location("S")
-ax.set_ylim(0, 4)
-ax.xaxis.grid(True, color='k', linestyle='-')
-ax.yaxis.grid(True, color='k', linestyle='-', lw='1.2')
-ax.set_yticks(np. arange(2))
+# Label MJO phases with shadow effect
+for x, y, label in [(-3.5, -1.5, '1'), (-1.5, -3.5, '2'), (1.5, -3.5, '3'), 
+                    (3.5, -1.5, '4'), (3.5, 1.5, '5'), (1.5, 3.5, '6'), 
+                    (-1.5, 3.5, '7'), (-3.5, 1.5, '8')]:
+    ax.text(x, y, label, fontsize=12, ha='center', color='darkblue', weight='bold',
+            bbox=dict(facecolor='white', alpha=0.8, edgecolor='none', boxstyle='round,pad=0.2'))
 
-lines, labels = plt.thetagrids(range(0, 360, int(360/len(employee))), (employee), fontsize=16)
+# Add region labels with elegant styling
+ax.text(0, -3.8, 'INDIAN OCEAN', fontsize=10, ha='center', color='teal', fontstyle='italic', va='center')
+ax.text(3.8, 0, 'MARITIME CONTINENT', fontsize=10, rotation=90, ha='center', color='teal', fontstyle='italic', va='center')
+ax.text(0, 3.8, 'WESTERN PACIFIC', fontsize=10, ha='center', color='teal', fontstyle='italic', va='center')
+ax.text(-3.8, 0, 'WEST HEMP & AFRICA', fontsize=10, rotation=90, ha='center', color='teal', fontstyle='italic', va='center')
 
-plt.plot(x, y, c ='green', marker='o', linewidth='1')
-plt.plot(xa, xb, c ='blue', marker='o', label='START')
-plt.plot(ya, yb, c ='red', marker='o', label='STOP')
+# Set limits and labels with professional font
+ax.set_xlim(-4, 4)
+ax.set_ylim(-4, 4)
+ax.set_xlabel('RMM1', fontsize=12, color='navy')
+ax.set_ylabel('RMM2', fontsize=12, color='navy')
 
-plt.suptitle('Madden–Julian Oscillation', fontsize = 30, color = 'red', fontweight = 'bold')
-ax.set_title('Analysis From ' +str(opn)+ ' To ' +str(end)+'\n', fontdict = font1)
-ax.legend(title='Xp Weather', title_fontsize=15)
-ax.set_xlabel("\nMJO Modifed Phase", fontdict = font2)
-#ax.set_ylabel("WEST 2", fontsize=15)
-ax.text(7.839, 4.456, "EAST 2", fontsize=16, ha="center", color='black')
-ax.text(4.727, 4.46, "WEST 2", fontsize=16, ha="center", color='black')
-ax.text(5.70, 6.25, "Last Update: " +str(up), fontsize=20, ha="center", color='black')
+# Title with a box
+title = ax.set_title(f'[RMM1, 2] MJO PHASE FROM {start_date} TO {end_date}', fontsize=14, weight='bold', color='navy', pad=12,
+                     bbox=dict(facecolor='white', edgecolor='gray', boxstyle='round,pad=0.5', alpha=0.9))
+                     
+cc = ax.text(0.99, 0.01, "© XP WEATHER", fontsize=10, ha="right", va="bottom", color='white', transform=ax.transAxes)
+cc.set_bbox(dict(facecolor='black', alpha=0.3, edgecolor='none'))
 
-
-
-for a, b in zip(a, b):
-    label = "{:}".format(a)
-    plt.annotate(label, (b, a), textcoords="offset points", xytext=(2,0),
-                 ha='left',
-                 color='black',
-                 fontsize=15)
-                 
-
+# Improve spacing
+plt.tight_layout()
 
 # Save the plot to a BytesIO buffer
 plot_buffer = io.BytesIO()
-plt.savefig(plot_buffer, format="jpg", transparent=True)
+plt.savefig(plot_buffer, format="jpg", transparent=True,  dpi=300, bbox_inches='tight', facecolor=fig.get_facecolor())
 plot_buffer.seek(0)
 
 # FTP Server Details
@@ -95,10 +120,9 @@ ftp_host = "ftpupload.net"
 ftp_username = "epiz_32144154"
 ftp_password = "Im80K123"
 
-# Connect to the FTP server and upload the plot directly
+    # Connect to the FTP server and upload the plot directly
 with ftplib.FTP(ftp_host) as ftp:
-    ftp.login(ftp_username, ftp_password)
-    ftp.cwd('htdocs/wx')  # Change directory to your desired location on the FTP server
-    ftp.storbinary('STOR soi7ma.jpg', plot_buffer)
-
-plt.show()
+        ftp.login(ftp_username, ftp_password)
+        ftp.cwd('htdocs/wx')  # Change directory to your desired location on the FTP server
+        ftp.storbinary('STOR mjo.jpg', plot_buffer)
+        plt.show()
