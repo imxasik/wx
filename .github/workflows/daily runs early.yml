@@ -29,3 +29,6 @@ jobs:
       - name: Run SOI Script
         run: python soi_index.py
         
+      - name: Run MJO Script
+        run: python mjo.py
+        
