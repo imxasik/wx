@@ -1,5 +1,4 @@
-<?php 
-require_once 'hp/security.php';
+<?php
 
 // FTP configuration
 $ftp_host = 'ftpupload.net';
