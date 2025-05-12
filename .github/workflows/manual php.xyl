@@ -1,0 +1,24 @@
+name: Manual Weather Data Upload
+
+on:
+  workflow_dispatch: # Allows manual triggering from GitHub Actions UI
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: ftp, curl # Ensure FTP and cURL extensions are enabled
+
+      - name: Run PHP script
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: php weather_upload.php
