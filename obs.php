@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 // FTP configuration (use environment variables for GitHub Actions)
 $ftp_host = getenv('FTP_HOST') ?: 'ftpupload.net';
@@ -8,6 +8,7 @@ $ftp_directory = 'htdocs/data'; // FTP directory to store the file
 
 // Log file for debugging
 $log_file = '/tmp/weather_upload.log';
+$raw_html_file = '/tmp/raw_html.txt'; // File to save raw HTML for analysis
 function log_message($message) {
     global $log_file;
     error_log(date('Y-m-d H:i:s') . " - $message\n", 3, $log_file);
@@ -21,7 +22,8 @@ $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $source_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; WeatherBot/1.0)');
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects
 $html = curl_exec($ch);
 
 if (curl_errno($ch)) {
@@ -29,8 +31,20 @@ if (curl_errno($ch)) {
     log_message($error);
     die($error);
 }
+
+// Save raw HTML for debugging
+file_put_contents($raw_html_file, $html);
+log_message("Saved raw HTML to $raw_html_file, size: " . strlen($html) . " bytes");
+
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+if ($http_code !== 200) {
+    $error = "HTTP request failed with status code: $http_code";
+    log_message($error);
+    curl_close($ch);
+    die($error);
+}
 curl_close($ch);
-log_message("Successfully fetched data from $source_url");
+log_message("Successfully fetched data from $source_url, HTTP code: $http_code");
 
 $lines = explode("\n", $html);
 $grouped_data = [];
@@ -51,6 +65,7 @@ foreach ($lines as $line) {
             'longitude' => $matches[4],
             'elevation' => trim($matches[5]),
         ];
+        log_message("Found station: {$current_station['wmo_id']} - {$current_station['station_name']}");
         continue;
     }
 
@@ -71,11 +86,13 @@ foreach ($lines as $line) {
                 'elevation' => $current_station['elevation'],
                 'weather_data' => $weather_data,
             ];
+            log_message("Saved report for observation time: $observation_time");
         }
         // Start new report
         $current_weather_data = [trim(substr($line, 18))];
         $matches_prev = $matches;
         $collecting = true;
+        log_message("Started new SYNOP report: {$matches[1]}{$matches[2]}");
         continue;
     }
 
@@ -102,6 +119,7 @@ foreach ($lines as $line) {
                 'elevation' => $current_station['elevation'],
                 'weather_data' => $weather_data,
             ];
+            log_message("Completed report for observation time: $observation_time");
         }
         $collecting = false;
         $current_weather_data = [];
@@ -124,6 +142,7 @@ if ($collecting && $current_station && !empty($current_weather_data)) {
         'elevation' => $current_station['elevation'],
         'weather_data' => $weather_data,
     ];
+    log_message("Saved final report for observation time: $observation_time");
 }
 
 log_message("Parsed " . count($grouped_data) . " observation times");
@@ -175,7 +194,7 @@ if ($latest_observation && isset($grouped_data[$latest_observation])) {
     }
     log_message("Logged in to FTP server");
 
-    // Enable passive mode (common fix for connectivity issues)
+    // Enable passive mode
     if (!ftp_pasv($ftp_connection, true)) {
         $error = "Failed to enable passive mode";
         log_message($error);
@@ -212,8 +231,8 @@ if ($latest_observation && isset($grouped_data[$latest_observation])) {
 
     echo "Successfully uploaded $remote_filename to FTP server";
 } else {
-    $error = "No valid observation data found";
-    log_message($error);
-    die($error);
+    $message = "No valid observation data found; skipping FTP upload";
+    log_message($message);
+    echo $message;
 }
 ?>
